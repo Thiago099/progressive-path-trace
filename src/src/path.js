@@ -125,6 +125,13 @@ async function CreateRenderer(canvas,{initSceneData})
 
 	initSceneData(pathTracingUniforms)
 
+	function updateGeometry()
+	{
+		//mouse move
+		initSceneData(pathTracingUniforms)
+		cameraIsMoving()
+	}
+
 
 	// setup screen-size quad geometry and shaders....
 
@@ -390,7 +397,7 @@ async function CreateRenderer(canvas,{initSceneData})
 	window.addEventListener('resize', onWindowResize, false);
 	window.addEventListener('orientationchange', onWindowResize, false);
 
-	return {animate,renderer}
+	return {animate,updateGeometry}
 
 } // end function init()
 

@@ -8,7 +8,7 @@ export {CreateScene}
 
 
 
-async function CreateScene()
+async function CreateScene(geometry)
 {
 
 	const hdrTexture =  await new THREE.TextureLoader().load('textures/uvgrid.jpg')
@@ -17,10 +17,10 @@ async function CreateScene()
 	hdrTexture.magFilter = THREE.NearestFilter;
 	hdrTexture.flipY = true;
 
-	var cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
 
 
-	const scene_data = await buildGeometry(cubeGeometry);
+
+	const scene_data = await buildGeometry(geometry);
 
 	function init(pathTracingUniforms)
 	{
@@ -28,6 +28,7 @@ async function CreateScene()
 	}
 	return {initSceneData:init}
 }
+
 // called automatically from within initTHREEjs() function (located in InitCommon.js file)
 function initSceneData({ triangleDataTexture, aabbDataTexture,uniqueMaterialTextures},hdrTexture, pathTracingUniforms) {
 	let skyLightIntensity = 2.0, sunLightIntensity = 2.0, sunColor = [1.0, 0.98, 0.92];
@@ -64,8 +65,6 @@ function MaterialObject(material, pathTracingMaterialList)
 
 async function buildGeometry(geometry)
 {
-
-
 
 	var tex =  await new THREE.TextureLoader().load("textures/uvgrid.jpg");
 

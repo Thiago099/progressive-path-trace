@@ -10,7 +10,9 @@ container.appendChild(canvas);
 
 async function main()
 {
-    const scene = await CreateScene()
+
+	var cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
+    const scene = await CreateScene(cubeGeometry)
     const renderer = await CreateRenderer(canvas,scene);
 
     animate();
