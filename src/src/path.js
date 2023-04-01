@@ -98,72 +98,9 @@ let cameraControlsPitchObject; //allows access to control camera's up/down movem
 
 let PI_2 = Math.PI / 2; //used by controls below
 
-let infoElement = document.getElementById('info');
-infoElement.style.cursor = "default";
-infoElement.style.userSelect = "none";
-infoElement.style.MozUserSelect = "none";
 
-let cameraInfoElement = document.getElementById('cameraInfo');
-cameraInfoElement.style.cursor = "default";
-cameraInfoElement.style.userSelect = "none";
-cameraInfoElement.style.MozUserSelect = "none";
 
-let mouseControl = true;
-let pointerlockChange;
 let fileLoader = new THREE.FileLoader();
-
-// The following list of keys is not exhaustive, but it should be more than enough to build interactive demos and games
-let KeyboardState = {
-	KeyA: false, KeyB: false, KeyC: false, KeyD: false, KeyE: false, KeyF: false, KeyG: false, KeyH: false, KeyI: false, KeyJ: false, KeyK: false, KeyL: false, KeyM: false,
-	KeyN: false, KeyO: false, KeyP: false, KeyQ: false, KeyR: false, KeyS: false, KeyT: false, KeyU: false, KeyV: false, KeyW: false, KeyX: false, KeyY: false, KeyZ: false,
-	ArrowLeft: false, ArrowUp: false, ArrowRight: false, ArrowDown: false, Space: false, Enter: false, PageUp: false, PageDown: false, Tab: false,
-	Minus: false, Equal: false, BracketLeft: false, BracketRight: false, Semicolon: false, Quote: false, Backquote: false,
-	Comma: false, Period: false, ShiftLeft: false, ShiftRight: false, Slash: false, Backslash: false, Backspace: false,
-	Digit1: false, Digit2: false, Digit3: false, Digit4: false, Digit5: false, Digit6: false, Digit7: false, Digit8: false, Digit9: false, Digit0: false
-}
-
-function onKeyDown(event)
-{
-	event.preventDefault();
-
-	KeyboardState[event.code] = true;
-}
-
-function onKeyUp(event)
-{
-	event.preventDefault();
-
-	KeyboardState[event.code] = false;
-}
-
-function keyPressed(keyName)
-{
-	if (!mouseControl)
-		return;
-
-	return KeyboardState[keyName];
-}
-
-
-function onMouseWheel(event)
-{
-	if (isPaused)
-		return;
-
-	// use the following instead, because event.preventDefault() gives errors in console
-	event.stopPropagation();
-
-	if (event.deltaY > 0)
-	{
-		increaseFOV = true;
-		dollyCameraOut = true;
-	}
-	else if (event.deltaY < 0)
-	{
-		decreaseFOV = true;
-		dollyCameraIn = true;
-	}
-}
 
 
 function onWindowResize(event)
@@ -201,51 +138,8 @@ function onWindowResize(event)
 	pathTracingUniforms.uVLen.value = Math.tan(fovScale);
 	pathTracingUniforms.uULen.value = pathTracingUniforms.uVLen.value * worldCamera.aspect;
 
-	if (!mouseControl)
-	{
-		button1Element.style.display = "";
-		button2Element.style.display = "";
-		button3Element.style.display = "";
-		button4Element.style.display = "";
-		button5Element.style.display = "";
-		button6Element.style.display = "";
-		// check if mobile device is in portrait or landscape mode and position buttons accordingly
-		if (SCREEN_WIDTH < SCREEN_HEIGHT)
-		{
-			button1Element.style.right = 36 + "%";
-			button2Element.style.right = 2 + "%";
-			button3Element.style.right = 16 + "%";
-			button4Element.style.right = 16 + "%";
-			button5Element.style.right = 3 + "%";
-			button6Element.style.right = 3 + "%";
-
-			button1Element.style.bottom = 5 + "%";
-			button2Element.style.bottom = 5 + "%";
-			button3Element.style.bottom = 13 + "%";
-			button4Element.style.bottom = 2 + "%";
-			button5Element.style.bottom = 25 + "%";
-			button6Element.style.bottom = 18 + "%";
-		}
-		else
-		{
-			button1Element.style.right = 22 + "%";
-			button2Element.style.right = 3 + "%";
-			button3Element.style.right = 11 + "%";
-			button4Element.style.right = 11 + "%";
-			button5Element.style.right = 3 + "%";
-			button6Element.style.right = 3 + "%";
-
-			button1Element.style.bottom = 10 + "%";
-			button2Element.style.bottom = 10 + "%";
-			button3Element.style.bottom = 26 + "%";
-			button4Element.style.bottom = 4 + "%";
-			button5Element.style.bottom = 48 + "%";
-			button6Element.style.bottom = 34 + "%";
-		}
-	} // end if ( !mouseControl ) {
 
 } // end function onWindowResize( event )
-
 
 
 function init()
@@ -254,18 +148,6 @@ function init()
 	window.addEventListener('resize', onWindowResize, false);
 	window.addEventListener('orientationchange', onWindowResize, false);
 
-	if ('ontouchstart' in window) 
-	{
-		mouseControl = false;
-		// if on mobile device, unpause the app because there is no ESC key and no mouse capture to do
-		isPaused = false;
-
-		ableToEngagePointerLock = true;
-
-		mobileJoystickControls = new MobileJoystickControls({
-			//showJoystick: true
-		});
-	}
 
 	// default GUI elements for all demos
 
@@ -280,97 +162,15 @@ function init()
 	{
 		needChangePixelResolution = true;
 	}
-	function handleCameraProjectionChange()
-	{
-		if (!currentlyUsingOrthographicCamera)
-			changeToOrthographicCamera = true;
-		else if (currentlyUsingOrthographicCamera)
-			changeToPerspectiveCamera = true;
-		// toggle boolean flag
-		currentlyUsingOrthographicCamera = !currentlyUsingOrthographicCamera;
-	}
-
 
 	gui = new GUI();
 
 	pixel_ResolutionController = gui.add(pixel_ResolutionObject, 'pixel_Resolution', 0.5, 1.0, 0.05).onChange(handlePixelResolutionChange);
-	if (!mouseControl)
-		orthographicCamera_ToggleController = gui.add(orthographicCamera_ToggleObject, 'Orthographic_Camera', false).onChange(handleCameraProjectionChange);
 
 	gui.domElement.style.userSelect = "none";
 	gui.domElement.style.MozUserSelect = "none";
 
 
-	if (mouseControl) 
-	{
-
-		gui.domElement.addEventListener("mouseenter", function (event) 
-		{
-			ableToEngagePointerLock = false;
-		}, false);
-		gui.domElement.addEventListener("mouseleave", function (event) 
-		{
-			ableToEngagePointerLock = true;
-		}, false);
-
-		window.addEventListener('wheel', onMouseWheel, false);
-
-		// window.addEventListener("click", function(event) 
-		// {
-		// 	event.preventDefault();	
-		// }, false);
-		window.addEventListener("dblclick", function (event) 
-		{
-			event.preventDefault();
-		}, false);
-
-		// document.body.addEventListener("click", function (event) 
-		// {
-		// 	if (!ableToEngagePointerLock)
-		// 		return;
-		// 	this.requestPointerLock = this.requestPointerLock || this.mozRequestPointerLock;
-		// 	this.requestPointerLock();
-		// }, false);
-
-
-		// pointerlockChange = function (event)
-		// {
-		// 	if (document.pointerLockElement === document.body ||
-		// 		document.mozPointerLockElement === document.body || document.webkitPointerLockElement === document.body)
-		// 	{
-		// 		document.addEventListener('keydown', onKeyDown, false);
-		// 		document.addEventListener('keyup', onKeyUp, false);
-		// 		isPaused = false;
-		// 	}
-		// 	else
-		// 	{
-		// 		document.removeEventListener('keydown', onKeyDown, false);
-		// 		document.removeEventListener('keyup', onKeyUp, false);
-		// 		isPaused = true;
-		// 	}
-		// };
-
-		// // Hook pointer lock state change events
-		// document.addEventListener('pointerlockchange', pointerlockChange, false);
-		// document.addEventListener('mozpointerlockchange', pointerlockChange, false);
-		// document.addEventListener('webkitpointerlockchange', pointerlockChange, false);
-
-	} // end if (mouseControl)
-
-
-	/* // Fullscreen API (optional)
-	document.addEventListener("click", function() 
-	{
-		if ( !document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement ) 
-		{
-			if (document.documentElement.requestFullscreen) 
-				document.documentElement.requestFullscreen();	
-			else if (document.documentElement.mozRequestFullScreen) 
-				document.documentElement.mozRequestFullScreen();
-			else if (document.documentElement.webkitRequestFullscreen) 
-				document.documentElement.webkitRequestFullscreen();
-		}
-	}); */
 
 	// load a resource
 	blueNoiseTexture = textureLoader.load(
@@ -417,14 +217,6 @@ function initTHREEjs()
 	container = document.getElementById('container');
 	container.appendChild(renderer.domElement);
 
-	stats = new Stats();
-	stats.domElement.style.position = 'absolute';
-	stats.domElement.style.top = '0px';
-	stats.domElement.style.cursor = "default";
-	stats.domElement.style.userSelect = "none";
-	stats.domElement.style.MozUserSelect = "none";
-	container.appendChild(stats.domElement);
-
 
 	clock = new THREE.Clock();
 
@@ -449,6 +241,7 @@ function initTHREEjs()
 	controls = new OrbitControls(worldCamera, canvas,()=>cameraIsMoving=true);
 
 
+	
 	//rotate the camera
 	//z move
 	var distance = 40; // desired distance
@@ -458,9 +251,8 @@ function initTHREEjs()
     worldCamera.position.copy(controls.target).add(vector); // set camera position
     controls.zoomSpeed = 2;
 	worldCamera.position.z = 50;
-	//rotation
 	
-
+	
 	console.log("OrbitControls: ", OrbitControls);
 
 	//rotate camera
@@ -497,26 +289,10 @@ function initTHREEjs()
 	});
 	screenCopyRenderTarget.texture.generateMipmaps = false;
 
-	// blueNoise texture used in all demos
-	/* blueNoiseTexture = new THREE.TextureLoader().load('textures/BlueNoise_RGBA256.png');
-	blueNoiseTexture.wrapS = THREE.RepeatWrapping;
-	blueNoiseTexture.wrapT = THREE.RepeatWrapping;
-	blueNoiseTexture.flipY = false;
-	blueNoiseTexture.minFilter = THREE.NearestFilter;
-	blueNoiseTexture.magFilter = THREE.NearestFilter;
-	blueNoiseTexture.generateMipmaps = false; */
-
-
-
-	// setup scene/demo-specific objects, variables, GUI elements, and data
 	initSceneData(pathTracingUniforms)
 
 	pixel_ResolutionController.setValue(pixelRatio);
-	if (!allowOrthographicCamera && !mouseControl)
-	{
-		orthographicCamera_ToggleController.domElement.hidden = true;
-		orthographicCamera_ToggleController.domElement.remove();
-	}
+
 
 
 
@@ -674,29 +450,6 @@ function animate()
 		cameraIsMoving = true;
 		windowIsBeingResized = false;
 	}
-	// check user controls
-	// if (mouseControl)
-	// {
-	// 	// movement detected
-	// 	if (oldYawRotation != cameraControlsYawObject.rotation.y ||
-	// 		oldPitchRotation != cameraControlsPitchObject.rotation.x)
-	// 	{
-	// 		cameraIsMoving = true;
-	// 	}
-
-	// 	// save state for next frame
-	// 	oldYawRotation = cameraControlsYawObject.rotation.y;
-	// 	oldPitchRotation = cameraControlsPitchObject.rotation.x;
-
-	// } // end if (mouseControl)
-
-
-	// this gives us a vector in the direction that the camera is pointing,
-	// which will be useful for moving the camera 'forward' and shooting projectiles in that direction
-
-
-
-	// update scene/demo-specific input(if custom), variables and uniforms every animation frame
 	if(updateVariablesAndUniforms(renderer,pathTracingUniforms))
 	{
 		cameraIsMoving = true
@@ -850,7 +603,6 @@ function animate()
 	renderer.setRenderTarget(null);
 	renderer.render(screenOutputScene, quadCamera);
 
-	stats.update();
 
 	requestAnimationFrame(animate);
 
