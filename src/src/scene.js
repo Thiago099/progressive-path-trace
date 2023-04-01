@@ -131,18 +131,42 @@ async function buildGeometry(geometry,textures)
 	// divide by 9 because of nonIndexed geometry (each triangle has 3 floats with each float constisting of 3 components)
 	let total_number_of_triangles = modelMesh.geometry.attributes.position.array.length / 9;
 
-	const uniqueMaterialTextures = textures;
-
+	const uniqueMaterialTextures = (()=>{
+		var result = {}
+		for(var texture of textures)
+		{
+			for(var texture_part of texture)
+			{
+				result[texture_part.uuid] = texture_part;
+			}
+		}
+		return Object.values(result);
+	})();
+	console.log(uniqueMaterialTextures);
 
 
 	const pathTracingMaterialList = [];
 
-	for(var i = 0; i < material_start_offset.length; i++)
+	for(var texture of textures)
 	{
-		var material = new MaterialObject({}, pathTracingMaterialList);
-		material.albedoTextureID = i;
-		material.pbrTextureID = i;
+		var material = {};
+		for(var unique_texture in uniqueMaterialTextures)
+		{
+			if (texture[0].uuid == uniqueMaterialTextures[unique_texture].uuid)
+			material.albedoTextureID = Number(unique_texture);
+		}
+		
+		if (texture.length > 1)
+		{
+			for(var unique_texture in uniqueMaterialTextures)
+			{
+				if (texture[1].uuid == uniqueMaterialTextures[unique_texture].uuid)
+				material.pbrTextureID =  Number(unique_texture);
+			}
+		}
+		pathTracingMaterialList.push(material);
 	}
+	console.log(pathTracingMaterialList);
 
 	console.log(pathTracingMaterialList);
 

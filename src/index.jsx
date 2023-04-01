@@ -16,10 +16,11 @@ async function main()
 
     var arrow = await new THREE.TextureLoader().load("textures/BlueNoise_RGBA256.png")
     var uvgrid = await new THREE.TextureLoader().load("textures/uvgrid.jpg")
+    var arrow_texture = new THREE.TextureLoader().load("textures/arrow.jpg")
 
     //move the sphere back in Z so we can see it.
     sphereGeometry.translate( 0, 0, 20 );
-    const scene = await CreateScene([sphereGeometry,cubeGeometry],[uvgrid, arrow])
+    const scene = await CreateScene([sphereGeometry,cubeGeometry],[[uvgrid,arrow_texture], [arrow,arrow_texture]])
     const renderer = await CreateRenderer(canvas,scene);
 
     animate();
