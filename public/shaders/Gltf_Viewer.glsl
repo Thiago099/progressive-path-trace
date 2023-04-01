@@ -19,6 +19,7 @@ uniform vec3 uSunColor;
 vec3 rayOrigin, rayDirection;
 // recorded intersection data:
 vec3 hitNormal, hitEmission, hitColor;
+vec3 metalicRoughness;
 vec2 hitUV;
 float hitObjectID, hitOpacity;
 int hitType = -100; 
@@ -235,11 +236,26 @@ vec4 texColor;
 		hitColor = vd6.yzw;
 		hitOpacity = vd7.y;
 		hitUV = triangleW * vec2(vd4.zw) + triangleU * vec2(vd5.xy) + triangleV * vec2(vd5.zw);
-		hitType = int(vd6.x);
+		//hitType = SPEC;//int(vd6.x);
 		hitAlbedoTextureID = int(vd7.x);
 		hitObjectID = float(objectCount);
 		texColor = texture(tAlbedoTextures[0], hitUV);
 		hitColor = pow(texColor.rgb, vec3(2.2));	
+		metalicRoughness = pow((texture(tAlbedoTextures[1], hitUV)).rgb, vec3(2.2));
+
+		hitType = DIFF;
+		if (metalicRoughness.g > 0.01) // roughness
+		{
+			hitType = COAT;
+		}
+		if (metalicRoughness.b > 0.01) // metalness
+		{
+			hitType = SPEC;
+		}
+		if(metalicRoughness.r > 0.01) 
+		{
+			hitType = REFR;
+		}
 	}
 
 	return t;
@@ -311,6 +327,22 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 
 			// if ray bounced off of diffuse material and hits sky
 			if (previousIntersecType == DIFF)
+			{
+				if (sampleLight == TRUE)
+					accumCol += mask * uSunColor * uSunLightIntensity * 0.5;
+				else
+					accumCol += mask * Get_HDR_Color(rayDirection) * uSkyLightIntensity * 0.5;
+			}
+
+			if (previousIntersecType == SPEC)
+			{
+				if (sampleLight == TRUE)
+					accumCol += mask * uSunColor * uSunLightIntensity * 0.5;
+				else
+					accumCol += mask * Get_HDR_Color(rayDirection) * uSkyLightIntensity * 0.5;
+			}
+
+			if (previousIntersecType == COAT)
 			{
 				if (sampleLight == TRUE)
 					accumCol += mask * uSunColor * uSunLightIntensity * 0.5;
@@ -419,11 +451,22 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			
 		} // end if (hitType == DIFF)
 
+		if(hitType == COAT)
+		{
+			mask *= hitColor;
+
+			// choose random Diffuse sample vector
+			rayDirection = randomCosWeightedDirectionInHemisphere(nl);
+			rayOrigin = x + nl * epsIntersect;
+
+			continue;
+		}
+
 		if (hitType == SPEC)  // Ideal SPECULAR reflection
 		{
 			mask *= hitColor;
 
-			rayDirection = reflect(rayDirection, nl);
+			rayDirection = randomDirectionInSpecularLobe(reflect(rayDirection, nl), metalicRoughness.g);
 			rayOrigin = x + rayDirection * epsIntersect;
 
 			bounceIsSpecular = TRUE; // turn on mirror caustics
@@ -458,14 +501,13 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 				sampleLight = FALSE;
 				continue;
 			}
-			
-			// transmit ray through surface
+
 			
 			//mask *= 1.0 - (hitColor * hitOpacity);
 			mask *= hitColor;
 			mask *= Tr;
-			//tdir = refract(rayDirection, nl, ratioIoR);
-			rayDirection = rayDirection; // TODO using rayDirection instead of tdir, because going through common Glass makes everything spherical from up close...
+			tdir = refract(rayDirection, nl, ratioIoR);
+			rayDirection = tdir; // TODO using rayDirection instead of tdir, because going through common Glass makes everything spherical from up close...
 			rayOrigin = x + rayDirection * epsIntersect;
 
 			if (diffuseCount < 2)

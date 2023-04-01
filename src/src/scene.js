@@ -51,7 +51,7 @@ function MaterialObject(material, pathTracingMaterialList)
 	this.type = material.opacity < 1 ? 2 : 1; // default is 1 = diffuse opaque, 2 = glossy transparent, 4 = glossy opaque;
 	this.albedoTextureID = 0; // which diffuse map to use for model's color, '-1' = no textures are used
 	this.color = material.color ? material.color.copy(material.color) : new THREE.Color(1.0, 1.0, 1.0); // takes on different meanings, depending on 'type' above
-	this.roughness = material.roughness || 0.0; // 0.0 to 1.0 range, perfectly smooth to extremely rough
+	this.roughness = material.roughness || 1.0; // 0.0 to 1.0 range, perfectly smooth to extremely rough
 	this.metalness = material.metalness || 0.0; // 0.0 to 1.0 range, usually either 0 or 1, either non-metal or metal
 	this.opacity = material.opacity || 1.0; // 0.0 to 1.0 range, fully transparent to fully opaque
 	// this seems to be unused
@@ -65,7 +65,8 @@ function MaterialObject(material, pathTracingMaterialList)
 async function buildGeometry(geometry)
 {
 
-	var tex =  await new THREE.TextureLoader().load("textures/uvgrid.jpg");
+	var tex2 =  await new THREE.TextureLoader().load("textures/ga.png")
+	var tex =  await new THREE.TextureLoader().load("textures/arrow.jpg");;
 
 	let modelPositionOffset = new THREE.Vector3();
 
@@ -79,7 +80,7 @@ async function buildGeometry(geometry)
 	// divide by 9 because of nonIndexed geometry (each triangle has 3 floats with each float constisting of 3 components)
 	let total_number_of_triangles = modelMesh.geometry.attributes.position.array.length / 9;
 
-	const uniqueMaterialTextures = [tex];
+	const uniqueMaterialTextures = [tex,tex2];
 	const pathTracingMaterialList = [];
 
 	var obj = new MaterialObject({}, pathTracingMaterialList);
