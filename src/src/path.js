@@ -3,7 +3,7 @@ import "./PathTracingCommon.js"
 import { OrbitControls } from './OrbitControls';
 
 export {init}
-import { initSceneData } from './scene';
+import { CreateScene } from './scene';
 
 let fovScale;
 
@@ -22,35 +22,24 @@ let fileLoader = new THREE.FileLoader();
 let textureLoader = new THREE.TextureLoader();
 
 
-
-function init()
+async function init(canvas)
 {
 	// load a resource
-	blueNoiseTexture = textureLoader.load(
-		// resource URL
-		'textures/BlueNoise_RGBA256.png',
-
-		// onLoad callback
-		function (texture)
-		{
-			texture.wrapS = THREE.RepeatWrapping;
-			texture.wrapT = THREE.RepeatWrapping;
-			texture.flipY = false;
-			texture.minFilter = THREE.NearestFilter;
-			texture.magFilter = THREE.NearestFilter;
-			texture.generateMipmaps = false;
-			//console.log("blue noise texture loaded");
-
-			initTHREEjs(); // boilerplate: init necessary three.js items and scene/demo-specific objects
-		}
-	);
-
+	blueNoiseTexture = await textureLoader.load('textures/BlueNoise_RGBA256.png')
+	blueNoiseTexture.wrapS = THREE.RepeatWrapping;
+	blueNoiseTexture.wrapT = THREE.RepeatWrapping;
+	blueNoiseTexture.flipY = false;
+	blueNoiseTexture.minFilter = THREE.NearestFilter;
+	blueNoiseTexture.magFilter = THREE.NearestFilter;
+	blueNoiseTexture.generateMipmaps = false;
+	const {initSceneData} = await CreateScene();
+	initTHREEjs(initSceneData,canvas); // boilerplate: init necessary three.js items and scene/demo-specific objects
 
 } // end function init()
 
 
 
-function initTHREEjs()
+function initTHREEjs(initSceneData,canvas)
 {
 
 
@@ -65,7 +54,6 @@ function initTHREEjs()
 	let useToneMapping = true;
 	let sceneIsDynamic = false;
 
-	const canvas = document.createElement('canvas');
 
 	const renderer = new THREE.WebGLRenderer({ canvas: canvas, context: canvas.getContext('webgl2') });
 	//suggestion: set to false for production
@@ -79,8 +67,7 @@ function initTHREEjs()
 	const context = renderer.getContext();
 	context.getExtension('EXT_color_buffer_float');
 
-	container = document.getElementById('container');
-	container.appendChild(renderer.domElement);
+
 
 
 	const clock = new THREE.Clock();
@@ -422,4 +409,3 @@ function initTHREEjs()
 	window.addEventListener('orientationchange', onWindowResize, false);
 
 } // end function initTHREEjs()
-

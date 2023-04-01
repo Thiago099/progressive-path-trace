@@ -1,18 +1,43 @@
 import * as THREE from 'three';
-import { RGBELoader  } from './RGBELoader.JS'
 import { BVH_Build_Iterative } from './BVH_Acc_Structure_Iterative_SAH_Builder';
-import { init } from "./path";
 
 
-let triangleDataTexture, aabbDataTexture,uniqueMaterialTextures;
 
-let hdrTexture
-
-export {initSceneData}
+export {CreateScene}
 
 
-let pathTracingMaterialList = [];
 
+
+async function CreateScene()
+{
+
+	const hdrTexture =  await new THREE.TextureLoader().load('textures/uvgrid.jpg')
+	hdrTexture.encoding = THREE.LinearEncoding;
+	hdrTexture.minFilter = THREE.NearestFilter;
+	hdrTexture.magFilter = THREE.NearestFilter;
+	hdrTexture.flipY = true;
+	const scene_data = await prepareGeometryForPT();
+
+	function init(pathTracingUniforms)
+	{
+		initSceneData(scene_data,hdrTexture, pathTracingUniforms)
+	}
+	return {initSceneData:init}
+}
+// called automatically from within initTHREEjs() function (located in InitCommon.js file)
+function initSceneData({ triangleDataTexture, aabbDataTexture,uniqueMaterialTextures},hdrTexture, pathTracingUniforms) {
+	let skyLightIntensity = 2.0, sunLightIntensity = 2.0, sunColor = [1.0, 0.98, 0.92];
+	// scene/demo-specific uniforms go here
+	pathTracingUniforms.tTriangleTexture = { value: triangleDataTexture };
+	pathTracingUniforms.tAABBTexture = { value: aabbDataTexture };
+	pathTracingUniforms.tHDRTexture = { value: hdrTexture };
+	pathTracingUniforms.tAlbedoTextures = { value: uniqueMaterialTextures };
+	pathTracingUniforms.uSkyLightIntensity = { value: skyLightIntensity };
+	pathTracingUniforms.uSunLightIntensity = { value: sunLightIntensity };
+	pathTracingUniforms.uSunColor = { value: new THREE.Color().fromArray(sunColor.map(x => x)) };
+	pathTracingUniforms.uSunDirection = { value: new THREE.Vector3() };
+
+} // end function initSceneData()
 
 
 
@@ -31,14 +56,6 @@ function MaterialObject(material, pathTracingMaterialList)
 }
 
 
-
-function loadModels()
-{
-
-	prepareGeometryForPT();
-	init();
-
-} // end function loadModels(modelPaths)
 
 
 async function prepareGeometryForPT()
@@ -61,8 +78,8 @@ async function prepareGeometryForPT()
 	// divide by 9 because of nonIndexed geometry (each triangle has 3 floats with each float constisting of 3 components)
 	let total_number_of_triangles = modelMesh.geometry.attributes.position.array.length / 9;
 
-	uniqueMaterialTextures = [tex];
-	pathTracingMaterialList = [];
+	const uniqueMaterialTextures = [tex];
+	const pathTracingMaterialList = [];
 
 	var obj = new MaterialObject({}, pathTracingMaterialList);
 	obj.albedoTextureID = 0;
@@ -212,18 +229,11 @@ async function prepareGeometryForPT()
 
 	} // end for (let i = 0; i < total_number_of_triangles; i++)
 
-	console.time("BvhGeneration");
-	console.log("BvhGeneration...");
 
-	// Build the BVH acceleration structure, which places a bounding box ('root' of the tree) around all of the
-	// triangles of the entire mesh, then subdivides each box into 2 smaller boxes.  It continues until it reaches 1 triangle,
-	// which it then designates as a 'leaf'
 	BVH_Build_Iterative(totalWork, aabb_array);
-	//console.log(buildnodes);
 
-	console.timeEnd("BvhGeneration");
 
-	triangleDataTexture = new THREE.DataTexture(triangle_array,
+	const triangleDataTexture = new THREE.DataTexture(triangle_array,
 		2048,
 		2048,
 		THREE.RGBAFormat,
@@ -241,7 +251,7 @@ async function prepareGeometryForPT()
 	triangleDataTexture.generateMipmaps = false;
 	triangleDataTexture.needsUpdate = true;
 
-	aabbDataTexture = new THREE.DataTexture(aabb_array,
+	const aabbDataTexture = new THREE.DataTexture(aabb_array,
 		2048,
 		2048,
 		THREE.RGBAFormat,
@@ -258,47 +268,17 @@ async function prepareGeometryForPT()
 	aabbDataTexture.flipY = false;
 	aabbDataTexture.generateMipmaps = false;
 	aabbDataTexture.needsUpdate = true;
-
+	return { triangleDataTexture, aabbDataTexture,uniqueMaterialTextures}
 
 } // end function prepareGeometryForPT(meshList, pathTracingMaterialList, triangleMaterialMarkers)
 
 
 
 
-// called automatically from within initTHREEjs() function (located in InitCommon.js file)
-function initSceneData(pathTracingUniforms) {
-		let skyLightIntensity = 2.0, sunLightIntensity = 2.0, sunColor = [1.0, 0.98, 0.92];
-
-
-	// scene/demo-specific uniforms go here
-	pathTracingUniforms.tTriangleTexture = { value: triangleDataTexture };
-	pathTracingUniforms.tAABBTexture = { value: aabbDataTexture };
-	pathTracingUniforms.tHDRTexture = { value: hdrTexture };
-	pathTracingUniforms.tAlbedoTextures = { value: uniqueMaterialTextures };
-	pathTracingUniforms.uSkyLightIntensity = { value: skyLightIntensity };
-	pathTracingUniforms.uSunLightIntensity = { value: sunLightIntensity };
-	pathTracingUniforms.uSunColor = { value: new THREE.Color().fromArray(sunColor.map(x => x)) };
-	pathTracingUniforms.uSunDirection = { value: new THREE.Vector3() };
-
-} // end function initSceneData()
 
 
 
 
 
-const hdrLoader = new RGBELoader();
-hdrLoader.type = THREE.FloatType; // override THREE's default of HalfFloatType
 
-hdrTexture = hdrLoader.load(
-	'textures/daytime.hdr',
-	function (texture)
-	{
-		texture.encoding = THREE.LinearEncoding;
-		texture.minFilter = THREE.NearestFilter;
-		texture.magFilter = THREE.NearestFilter;
-		texture.flipY = true;
 
-		// now that the HDR image has loaded, we can load the models
-		loadModels(); // load models, init app, and start animating
-	}
-);

@@ -1,5 +1,13 @@
 
 import './style.css'
 import * as THREE from 'three'
+import { init } from './src/path.js';
 
-import "./src/scene.js"
+
+const canvas = document.createElement('canvas');
+container = document.getElementById('container');
+container.appendChild(canvas);
+init(canvas);
+
+
+import "./src/path.js"
