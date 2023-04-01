@@ -21,7 +21,7 @@ let fileLoader = new THREE.FileLoader();
 let textureLoader = new THREE.TextureLoader();
 
 
-async function CreateRenderer(canvas,{initSceneData})
+async function CreateRenderer(canvas,{updateScene})
 {
 	// load a resource
 	blueNoiseTexture = await textureLoader.load('textures/BlueNoise_RGBA256.png')
@@ -123,13 +123,13 @@ async function CreateRenderer(canvas,{initSceneData})
 	const pathTracingUniforms = {}
 	
 
-	initSceneData(pathTracingUniforms)
+	await updateScene(pathTracingUniforms)
 
-	function updateGeometry()
+	async function Update()
 	{
 		//mouse move
-		initSceneData(pathTracingUniforms)
-		cameraIsMoving()
+		await updateScene(pathTracingUniforms)
+		cameraIsMoving = true;
 	}
 
 
@@ -397,7 +397,7 @@ async function CreateRenderer(canvas,{initSceneData})
 	window.addEventListener('resize', onWindowResize, false);
 	window.addEventListener('orientationchange', onWindowResize, false);
 
-	return {animate,updateGeometry}
+	return {animate,Update}
 
 } // end function init()
 

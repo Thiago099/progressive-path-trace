@@ -18,15 +18,14 @@ async function CreateScene(geometry)
 	hdrTexture.flipY = true;
 
 
-
-
-	const scene_data = await buildGeometry(geometry);
-
-	function init(pathTracingUniforms)
+	async function updateScene(pathTracingUniforms)
 	{
+		const scene_data = await buildGeometry(geometry);
 		initSceneData(scene_data,hdrTexture, pathTracingUniforms)
 	}
-	return {initSceneData:init}
+
+
+	return {updateScene}
 }
 
 // called automatically from within initTHREEjs() function (located in InitCommon.js file)
