@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { RGBELoader  } from './RGBELoader.JS'
 import { BVH_Build_Iterative } from './BVH_Acc_Structure_Iterative_SAH_Builder';
 // scene/demo-specific variables go here
-import { init,getGui } from "./path";
+import { init } from "./path";
 // Rendering variables
 
 
@@ -48,47 +48,6 @@ let sun_ColorController, sun_ColorObject;
 let sunColorChanged = false;
 
 
-function init_GUI() 
-{
-	const gui = getGui();
-	hdr_ExposureObject = {
-		hdrExposure: 1.0
-	}
-	skyLight_IntensityObject = {
-		skyLightIntensity: 2.0
-	}
-	sun_AngleObject = {
-		sunAngle: Math.PI / 2.5
-	}
-	sunLight_IntensityObject = {
-		sunLightIntensity: 2.0
-	}
-	sun_ColorObject = {
-		sunColor: [1.0, 0.98, 0.92]
-	}
-
-	hdr_ExposureController = gui.add(hdr_ExposureObject, 'hdrExposure', 0, 10).step(10 / 100).onChange(() =>
-	{
-		hdrExposureChanged = true;
-	});
-	skyLight_IntensityController = gui.add(skyLight_IntensityObject, 'skyLightIntensity', 0, 5).step(5 / 100).onChange(() =>
-	{
-		skyLightIntensityChanged = true;
-	});
-	sun_AngleController = gui.add(sun_AngleObject, 'sunAngle', 0, Math.PI).step(Math.PI / 100).onChange(() =>
-	{
-		sunAngleChanged = true;
-	});
-	sunLight_IntensityController = gui.add(sunLight_IntensityObject, 'sunLightIntensity', 0, 5).step(5 / 100).onChange(() =>
-	{
-		sunLightIntensityChanged = true;
-	});
-	sun_ColorController = gui.addColor(sun_ColorObject, 'sunColor').onChange(() =>
-	{
-		sunColorChanged = true;
-	});
-
-} // end function init_GUI()
 
 
 function MaterialObject(material, pathTracingMaterialList)
@@ -140,7 +99,6 @@ async function prepareGeometryForPT()
 	var tex =  await new THREE.TextureLoader().load("textures/uvgrid.jpg");
 
 	//move up
-	cubeGeometry.translate(0, 0.5, 0);
 		
 	// Merge geometry from all models into one new mesh
 	let modelMesh = new THREE.Mesh(cubeGeometry);
@@ -358,7 +316,6 @@ async function prepareGeometryForPT()
 // called automatically from within initTHREEjs() function (located in InitCommon.js file)
 function initSceneData(pathTracingUniforms) {
 
-	init_GUI();
 
 	// scene/demo-specific uniforms go here
 	pathTracingUniforms.tTriangleTexture = { value: triangleDataTexture };
@@ -386,21 +343,21 @@ function updateVariablesAndUniforms(renderer,pathTracingUniforms)
 	var cameraIsMoving = false;
 	if (hdrExposureChanged)
 	{
-		renderer.toneMappingExposure = hdr_ExposureController.getValue();
+		renderer.toneMappingExposure =  1.0
 		cameraIsMoving = true;
 		hdrExposureChanged = false;
 	}
 
 	if (skyLightIntensityChanged)
 	{
-		pathTracingUniforms.uSkyLightIntensity.value = skyLight_IntensityController.getValue();
+		pathTracingUniforms.uSkyLightIntensity.value = 2.0
 		cameraIsMoving = true;
 		skyLightIntensityChanged = false;
 	}
 
 	if (sunAngleChanged)
 	{
-		sunAngle = sun_AngleController.getValue();
+		sunAngle = Math.PI / 2.5
 		sunDirection.set(Math.cos(sunAngle) * 1.2, Math.sin(sunAngle), -Math.cos(sunAngle) * 3.0);
 		sunDirection.normalize();
 		pathTracingUniforms.uSunDirection.value.copy(sunDirection);
@@ -410,14 +367,14 @@ function updateVariablesAndUniforms(renderer,pathTracingUniforms)
 
 	if (sunLightIntensityChanged)
 	{
-		pathTracingUniforms.uSunLightIntensity.value = sunLight_IntensityController.getValue();
+		pathTracingUniforms.uSunLightIntensity.value = 2.0
 		cameraIsMoving = true;
 		sunLightIntensityChanged = false;
 	}
 
 	if (sunColorChanged)
 	{
-		sunColor = sun_ColorController.getValue();
+		sunColor = [1.0, 0.98, 0.92]
 		pathTracingUniforms.uSunColor.value.setRGB(sunColor[0], sunColor[1], sunColor[2]);
 
 		cameraIsMoving = true;

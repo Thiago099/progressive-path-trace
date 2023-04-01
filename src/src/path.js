@@ -1,12 +1,10 @@
 import * as THREE from 'three';
 import "./PathTracingCommon.js"
 import { OrbitControls } from './OrbitControls';
-import GUI from 'lil-gui'; 
-function getGui() {
-  return gui;
-}
+
 import Stats from './stats.module';
-export {init,getGui}
+export {init}
+export {ResizeWindow}
 import { initSceneData,updateVariablesAndUniforms } from './scene';
 let SCREEN_WIDTH;
 let SCREEN_HEIGHT;
@@ -45,7 +43,7 @@ let apertureChangeSpeed = 1;
 let focusDistance =  100.0;
 let increaseFocusDist = false;
 let decreaseFocusDist = false;
-let pixelRatio = 0.5;
+let pixelRatio = 1;
 let windowIsBeingResized = false;
 let TWO_PI = Math.PI * 2;
 let sampleCounter = 0.0; // will get increased by 1 in animation loop before rendering
@@ -80,7 +78,6 @@ let pixelEdgeSharpness = 1.0;
 let edgeSharpenSpeed = 0.05;
 let filterDecaySpeed = 0.0002;
 
-let gui;
 let ableToEngagePointerLock = true;
 let pixel_ResolutionController, pixel_ResolutionObject;
 let needChangePixelResolution = false;
@@ -142,11 +139,14 @@ function onWindowResize(event)
 } // end function onWindowResize( event )
 
 
+function ResizeWindow()
+{
+	window.addEventListener('resize', onWindowResize, false);
+	window.addEventListener('orientationchange', onWindowResize, false);
+}
 function init()
 {
 
-	window.addEventListener('resize', onWindowResize, false);
-	window.addEventListener('orientationchange', onWindowResize, false);
 
 
 	// default GUI elements for all demos
@@ -163,12 +163,7 @@ function init()
 		needChangePixelResolution = true;
 	}
 
-	gui = new GUI();
 
-	pixel_ResolutionController = gui.add(pixel_ResolutionObject, 'pixel_Resolution', 0.5, 1.0, 0.05).onChange(handlePixelResolutionChange);
-
-	gui.domElement.style.userSelect = "none";
-	gui.domElement.style.MozUserSelect = "none";
 
 
 
@@ -291,7 +286,6 @@ function initTHREEjs()
 
 	initSceneData(pathTracingUniforms)
 
-	pixel_ResolutionController.setValue(pixelRatio);
 
 
 

@@ -486,7 +486,7 @@ void SetupScene(void)
 //-----------------------------------------------------------------------
 {
 	// Add thin box for the ground (acts like ground plane)
-	box = Box( vec3(-100000, -1, -100000), vec3(100000, 0, 100000), vec3(0), vec3(0.45), DIFF);
+	// box = Box( vec3(-100000, -1, -100000), vec3(100000, 0, 100000), vec3(0), vec3(0.45), DIFF);
 }
 
 
