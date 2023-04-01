@@ -3,7 +3,7 @@ import "./PathTracingCommon.js"
 import { OrbitControls } from './OrbitControls';
 
 export {init}
-import { initSceneData,updateVariablesAndUniforms } from './scene';
+import { initSceneData } from './scene';
 
 let fovScale;
 
@@ -273,7 +273,25 @@ function initTHREEjs()
 	// this 'jumpstarts' the initial dimensions and parameters for the window and renderer
 	onWindowResize();
 
-	// everything is set up, now we can start animating
+	renderer.toneMappingExposure =  1.0
+
+	pathTracingUniforms.uSkyLightIntensity.value = 2.0
+
+	var sunAngle = Math.PI / 2.5
+	var sunDirection = new THREE.Vector3();
+	sunDirection.set(Math.cos(sunAngle) * 1.2, Math.sin(sunAngle), -Math.cos(sunAngle) * 3.0);
+	sunDirection.normalize();
+	pathTracingUniforms.uSunDirection.value.copy(sunDirection);
+
+	pathTracingUniforms.uSunLightIntensity.value = 2.0
+
+	var sunColor = [1.0, 0.98, 0.92]
+	pathTracingUniforms.uSunColor.value.setRGB(sunColor[0], sunColor[1], sunColor[2]);
+	// cameraIsMoving = true;
+
+
+
+
 	animate();
 	
 
@@ -290,10 +308,6 @@ function initTHREEjs()
 		{
 			cameraIsMoving = true;
 			windowIsBeingResized = false;
-		}
-		if(updateVariablesAndUniforms(renderer,pathTracingUniforms))
-		{
-			cameraIsMoving = true
 		}
 
 

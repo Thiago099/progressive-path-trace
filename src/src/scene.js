@@ -8,7 +8,7 @@ let triangleDataTexture, aabbDataTexture,uniqueMaterialTextures;
 
 let hdrTexture
 
-export {initSceneData,updateVariablesAndUniforms}
+export {initSceneData}
 
 
 let pathTracingMaterialList = [];
@@ -35,27 +35,10 @@ function MaterialObject(material, pathTracingMaterialList)
 function loadModels()
 {
 
-
-	console.time("LoadingGltf");
-	// Show the loading spinner
-	loadingSpinner.classList.remove("hidden");
-
-		
 	prepareGeometryForPT();
-
-
-
 	init();
 
-	// Hide loading spinning and show menu
-	// loadingSpinner.classList.add("hidden");
-	// gui.domElement.classList.remove("hidden");
-
 } // end function loadModels(modelPaths)
-
-
-
-
 
 
 async function prepareGeometryForPT()
@@ -297,65 +280,10 @@ function initSceneData(pathTracingUniforms) {
 	pathTracingUniforms.uSunColor = { value: new THREE.Color().fromArray(sunColor.map(x => x)) };
 	pathTracingUniforms.uSunDirection = { value: new THREE.Vector3() };
 
-	// jumpstart the gui variables so that when the demo starts, all the uniforms are up to date
-	// hdrExposureChanged = skyLightIntensityChanged = sunAngleChanged =
-	// 	sunLightIntensityChanged = sunColorChanged = true;
-
-
 } // end function initSceneData()
 
 
 
-
-// called automatically from within the animate() function (located in InitCommon.js file)
-function updateVariablesAndUniforms(renderer,pathTracingUniforms)
-{
-	// var cameraIsMoving = false;
-	// if (hdrExposureChanged)
-	// {
-	// 	renderer.toneMappingExposure =  1.0
-	// 	cameraIsMoving = true;
-	// 	hdrExposureChanged = false;
-	// }
-
-	// if (skyLightIntensityChanged)
-	// {
-	// 	pathTracingUniforms.uSkyLightIntensity.value = 2.0
-	// 	cameraIsMoving = true;
-	// 	skyLightIntensityChanged = false;
-	// }
-
-	// if (sunAngleChanged)
-	// {
-	// 	sunAngle = Math.PI / 2.5
-	// 	sunDirection.set(Math.cos(sunAngle) * 1.2, Math.sin(sunAngle), -Math.cos(sunAngle) * 3.0);
-	// 	sunDirection.normalize();
-	// 	pathTracingUniforms.uSunDirection.value.copy(sunDirection);
-	// 	cameraIsMoving = true;
-	// 	sunAngleChanged = false;
-	// }
-
-	// if (sunLightIntensityChanged)
-	// {
-	// 	pathTracingUniforms.uSunLightIntensity.value = 2.0
-	// 	cameraIsMoving = true;
-	// 	sunLightIntensityChanged = false;
-	// }
-
-	// if (sunColorChanged)
-	// {
-	// 	sunColor = [1.0, 0.98, 0.92]
-	// 	pathTracingUniforms.uSunColor.value.setRGB(sunColor[0], sunColor[1], sunColor[2]);
-
-	// 	cameraIsMoving = true;
-	// 	sunColorChanged = false;
-	// }
-
-	// INFO
-	// cameraInfoElement.innerHTML = "FOV: " + worldCamera.fov + " / Aperture: " + apertureSize.toFixed(2) + " / FocusDistance: " + focusDistance + "<br>" + "Samples: " + sampleCounter;
-	return false
-
-} // end function updateVariablesAndUniforms()
 
 
 const hdrLoader = new RGBELoader();
