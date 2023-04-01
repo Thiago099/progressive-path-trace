@@ -16,7 +16,11 @@ async function CreateScene()
 	hdrTexture.minFilter = THREE.NearestFilter;
 	hdrTexture.magFilter = THREE.NearestFilter;
 	hdrTexture.flipY = true;
-	const scene_data = await prepareGeometryForPT();
+
+	var cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
+
+
+	const scene_data = await buildGeometry(cubeGeometry);
 
 	function init(pathTracingUniforms)
 	{
@@ -58,11 +62,10 @@ function MaterialObject(material, pathTracingMaterialList)
 
 
 
-async function prepareGeometryForPT()
+async function buildGeometry(geometry)
 {
 
-	var cubeGeometry = new THREE.BoxGeometry( 1, 1, 1 );
-	//add texture
+
 
 	var tex =  await new THREE.TextureLoader().load("textures/uvgrid.jpg");
 
@@ -71,7 +74,7 @@ async function prepareGeometryForPT()
 	//move up
 		
 	// Merge geometry from all models into one new mesh
-	let modelMesh = new THREE.Mesh(cubeGeometry);
+	let modelMesh = new THREE.Mesh(geometry);
 	if (modelMesh.geometry.index)
 		modelMesh.geometry = modelMesh.geometry.toNonIndexed(); // why do we need NonIndexed geometry?
 
@@ -82,7 +85,7 @@ async function prepareGeometryForPT()
 	const pathTracingMaterialList = [];
 
 	var obj = new MaterialObject({}, pathTracingMaterialList);
-	obj.albedoTextureID = 0;
+	obj.albedoTextureID = 0
 
 	modelMesh.geometry.rotateY(Math.PI);
 
@@ -91,7 +94,7 @@ async function prepareGeometryForPT()
 	// Initialize triangle and aabb arrays where 2048 = width and height of texture and 4 are the r, g, b and a components
 	let triangle_array = new Float32Array(2048 * 2048 * 4);
 	const aabb_array = new Float32Array(2048 * 2048 * 4);
-	const modelScale = 10.0;
+	const modelScale = 1.0;
 
 
 	var triangle_b_box_min = new THREE.Vector3();
@@ -270,7 +273,7 @@ async function prepareGeometryForPT()
 	aabbDataTexture.needsUpdate = true;
 	return { triangleDataTexture, aabbDataTexture,uniqueMaterialTextures}
 
-} // end function prepareGeometryForPT(meshList, pathTracingMaterialList, triangleMaterialMarkers)
+} // end function buildGeometry(meshList, pathTracingMaterialList, triangleMaterialMarkers)
 
 
 

@@ -2,8 +2,7 @@ import * as THREE from 'three';
 import "./PathTracingCommon.js"
 import { OrbitControls } from './OrbitControls';
 
-export {init}
-import { CreateScene } from './scene';
+export {CreateRenderer}
 
 let fovScale;
 
@@ -22,7 +21,7 @@ let fileLoader = new THREE.FileLoader();
 let textureLoader = new THREE.TextureLoader();
 
 
-async function init(canvas)
+async function CreateRenderer(canvas,{initSceneData})
 {
 	// load a resource
 	blueNoiseTexture = await textureLoader.load('textures/BlueNoise_RGBA256.png')
@@ -32,16 +31,6 @@ async function init(canvas)
 	blueNoiseTexture.minFilter = THREE.NearestFilter;
 	blueNoiseTexture.magFilter = THREE.NearestFilter;
 	blueNoiseTexture.generateMipmaps = false;
-	const {initSceneData} = await CreateScene();
-	initTHREEjs(initSceneData,canvas); // boilerplate: init necessary three.js items and scene/demo-specific objects
-
-} // end function init()
-
-
-
-function initTHREEjs(initSceneData,canvas)
-{
-
 
 	const EPS_intersect= 0.001;
 	const apertureSize = 0.0;
@@ -56,6 +45,8 @@ function initTHREEjs(initSceneData,canvas)
 
 
 	const renderer = new THREE.WebGLRenderer({ canvas: canvas, context: canvas.getContext('webgl2') });
+
+	const regularRenderer = new THREE.WebGLRenderer({ canvas: canvas, context: canvas.getContext('webgl') });
 	//suggestion: set to false for production
 	renderer.debug.checkShaderErrors = true;
 
@@ -277,14 +268,9 @@ function initTHREEjs(initSceneData,canvas)
 	// cameraIsMoving = true;
 
 
-
-
-	animate();
-	
-
-
 	function animate()
 	{
+
 
 		const frameTime = clock.getDelta();
 
@@ -362,11 +348,7 @@ function initTHREEjs(initSceneData,canvas)
 		renderer.render(screenOutputScene, quadCamera);
 
 
-		requestAnimationFrame(animate);
-
-			// reset flags
-			cameraIsMoving = false;
-
+		cameraIsMoving = false;
 	} // end function animate()
 
 	function onWindowResize()
@@ -408,4 +390,7 @@ function initTHREEjs(initSceneData,canvas)
 	window.addEventListener('resize', onWindowResize, false);
 	window.addEventListener('orientationchange', onWindowResize, false);
 
-} // end function initTHREEjs()
+	return {animate,renderer}
+
+} // end function init()
+
