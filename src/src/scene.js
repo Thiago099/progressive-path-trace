@@ -8,7 +8,7 @@ export {CreateScene}
 
 
 
-async function CreateScene(geometry)
+async function CreateScene(geometry, textures)
 {
 
 	const hdrTexture =  await new THREE.TextureLoader().load('textures/uvgrid.jpg')
@@ -20,7 +20,7 @@ async function CreateScene(geometry)
 
 	async function updateScene(pathTracingUniforms)
 	{
-		const scene_data = await buildGeometry(geometry);
+		const scene_data = await buildGeometry(geometry,textures);
 		initSceneData(scene_data,hdrTexture, pathTracingUniforms)
 	}
 
@@ -59,32 +59,93 @@ function MaterialObject(material, pathTracingMaterialList)
 	pathTracingMaterialList.push(this);
 }
 
+function mergeGeometry(geometries)
+{
+	const mergedGeometry = new THREE.BufferGeometry();
+
+	var material_start_offset = new Uint32Array(geometries.length);
+	let totalVertices = 0;
+	let totalFaces = 0;
+	let totalUvs = 0;
+	for (let i = 0; i < geometries.length; i++)
+	{
+		totalVertices += geometries[i].attributes.position.array.length;
+		totalFaces += geometries[i].index.array.length;
+		totalUvs += geometries[i].attributes.uv.array.length;
+	}
+	const positionArray = new Float32Array(totalVertices);
+	const normalArray = new Float32Array(totalVertices);
+	const uvArray = new Float32Array(totalUvs);
+	const indexArray = new Uint32Array(totalFaces);
+	let vertexOffset = 0;
+	let faceOffset = 0;
+	let uvOffset = 0;
+	let triangleOffset = 0;
+	for (let i = 0; i < geometries.length; i++)
+	{
+		const geometry = geometries[i];
+		positionArray.set(geometry.attributes.position.array, vertexOffset);
+		normalArray.set(geometry.attributes.normal.array, vertexOffset);
+		uvArray.set(geometry.attributes.uv.array, uvOffset);
+		indexArray.set(geometry.index.array, faceOffset);
+		for (let j = 0; j < geometry.index.array.length; j++)
+			indexArray[faceOffset + j] += vertexOffset / 3;
 
 
 
-async function buildGeometry(geometry)
+		var currentLength = geometry.index.array.length / 3; 
+		triangleOffset += currentLength;
+		material_start_offset[i] =	triangleOffset;
+		vertexOffset += geometry.attributes.position.array.length;
+		faceOffset += geometry.index.array.length;
+		uvOffset += geometry.attributes.uv.array.length;
+	}
+	
+	mergedGeometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
+	mergedGeometry.setAttribute('normal', new THREE.BufferAttribute(normalArray, 3));
+	mergedGeometry.setAttribute('uv', new THREE.BufferAttribute(uvArray, 2));
+	mergedGeometry.setIndex(new THREE.BufferAttribute(indexArray, 1));
+	return {mergedGeometry,material_start_offset};
+}
+
+
+
+
+async function buildGeometry(geometry,textures)
 {
 
-	var tex2 =  await new THREE.TextureLoader().load("textures/ga.png")
-	var tex =  await new THREE.TextureLoader().load("textures/arrow.jpg");;
 
 	let modelPositionOffset = new THREE.Vector3();
 
 	//move up
+
+
+	const {mergedGeometry,material_start_offset} = mergeGeometry(geometry);
+
 		
 	// Merge geometry from all models into one new mesh
-	let modelMesh = new THREE.Mesh(geometry);
+	let modelMesh = new THREE.Mesh(mergedGeometry);
 	if (modelMesh.geometry.index)
 		modelMesh.geometry = modelMesh.geometry.toNonIndexed(); // why do we need NonIndexed geometry?
 
 	// divide by 9 because of nonIndexed geometry (each triangle has 3 floats with each float constisting of 3 components)
 	let total_number_of_triangles = modelMesh.geometry.attributes.position.array.length / 9;
 
-	const uniqueMaterialTextures = [tex,tex2];
+	const uniqueMaterialTextures = textures;
+
+
+
 	const pathTracingMaterialList = [];
 
-	var obj = new MaterialObject({}, pathTracingMaterialList);
-	obj.albedoTextureID = 0
+	for(var i = 0; i < material_start_offset.length; i++)
+	{
+		var material = new MaterialObject({}, pathTracingMaterialList);
+		material.albedoTextureID = i;
+		material.pbrTextureID = i;
+	}
+
+	console.log(pathTracingMaterialList);
+
 
 	modelMesh.geometry.rotateY(Math.PI);
 
@@ -112,6 +173,8 @@ async function buildGeometry(geometry)
 		modelHasUVs = true;
 	}
 
+
+
 	let materialNumber = 0;
 	for (let i = 0; i < total_number_of_triangles; i++)
 	{
@@ -128,6 +191,7 @@ async function buildGeometry(geometry)
 			vt0.set(vta[6 * i + 0], vta[6 * i + 1]);
 			vt1.set(vta[6 * i + 2], vta[6 * i + 3]);
 			vt2.set(vta[6 * i + 4], vta[6 * i + 5]);
+
 		} else
 		{
 			vt0.set(-1, -1);
@@ -191,20 +255,22 @@ async function buildGeometry(geometry)
 
 		// the remaining slots are used for PBR material properties
 
-		// if (i >= triangleMaterialMarkers[materialNumber])
-		// 	materialNumber++;
+		if (i >= material_start_offset[materialNumber])
+		{
+			materialNumber++;
+		}
 
 
 		//slot 6
-		triangle_array[32 * i + 24] = pathTracingMaterialList[materialNumber].type; // r or x
-		triangle_array[32 * i + 25] = pathTracingMaterialList[materialNumber].color.r; // g or y
-		triangle_array[32 * i + 26] = pathTracingMaterialList[materialNumber].color.g; // b or z
-		triangle_array[32 * i + 27] = pathTracingMaterialList[materialNumber].color.b; // a or w
+		triangle_array[32 * i + 24] = 0//pathTracingMaterialList[materialNumber].type; // r or x
+		triangle_array[32 * i + 25] = 0//pathTracingMaterialList[materialNumber].color.r; // g or y
+		triangle_array[32 * i + 26] = 0//pathTracingMaterialList[materialNumber].color.g; // b or z
+		triangle_array[32 * i + 27] = 0//pathTracingMaterialList[materialNumber].color.b; // a or w
 
 		//slot 7
 		triangle_array[32 * i + 28] = pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
-		triangle_array[32 * i + 29] = pathTracingMaterialList[materialNumber].opacity; // g or y
-		triangle_array[32 * i + 30] = 0; // b or z
+		triangle_array[32 * i + 29] = 1//pathTracingMaterialList[materialNumber].opacity; // g or y
+		triangle_array[32 * i + 30] = pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
 		triangle_array[32 * i + 31] = 0; // a or w
 
 		triangle_b_box_min.copy(triangle_b_box_min.min(vp0));

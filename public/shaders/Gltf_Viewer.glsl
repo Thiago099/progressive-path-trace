@@ -238,11 +238,31 @@ vec4 texColor;
 		hitUV = triangleW * vec2(vd4.zw) + triangleU * vec2(vd5.xy) + triangleV * vec2(vd5.zw);
 		//hitType = SPEC;//int(vd6.x);
 		hitAlbedoTextureID = int(vd7.x);
+		int hitPbrTextureId = int(vd7.z);
 		hitObjectID = float(objectCount);
-		texColor = texture(tAlbedoTextures[0], hitUV);
-		hitColor = pow(texColor.rgb, vec3(2.2));	
-		metalicRoughness = pow((texture(tAlbedoTextures[1], hitUV)).rgb, vec3(2.2));
 
+
+
+			 if(hitAlbedoTextureID == 0) texColor = texture(tAlbedoTextures[0], hitUV);
+		else if(hitAlbedoTextureID == 1)  texColor = texture(tAlbedoTextures[1], hitUV);
+		else if(hitAlbedoTextureID == 2)  texColor = texture(tAlbedoTextures[2], hitUV);
+		else if(hitAlbedoTextureID == 3)  texColor = texture(tAlbedoTextures[3], hitUV);
+		else if(hitAlbedoTextureID == 4)  texColor = texture(tAlbedoTextures[4], hitUV);
+		else if(hitAlbedoTextureID == 5)  texColor = texture(tAlbedoTextures[5], hitUV);
+		else if(hitAlbedoTextureID == 6)  texColor = texture(tAlbedoTextures[6], hitUV);
+		else if(hitAlbedoTextureID == 7)  texColor = texture(tAlbedoTextures[7], hitUV);
+
+		hitColor = pow(texColor.rgb, vec3(2.2));	
+
+			 if (hitPbrTextureId == 0) metalicRoughness = pow((texture(tAlbedoTextures[0], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 1) metalicRoughness = pow((texture(tAlbedoTextures[1], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 2) metalicRoughness = pow((texture(tAlbedoTextures[2], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 3) metalicRoughness = pow((texture(tAlbedoTextures[3], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 4) metalicRoughness = pow((texture(tAlbedoTextures[4], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 5) metalicRoughness = pow((texture(tAlbedoTextures[5], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 6) metalicRoughness = pow((texture(tAlbedoTextures[6], hitUV)).rgb, vec3(2.2));
+		else if (hitPbrTextureId == 7) metalicRoughness = pow((texture(tAlbedoTextures[6], hitUV)).rgb, vec3(2.2));
+		
 		hitType = DIFF;
 		if (metalicRoughness.g > 0.01) // roughness
 		{
@@ -528,7 +548,7 @@ void SetupScene(void)
 //-----------------------------------------------------------------------
 {
 	// Add thin box for the ground (acts like ground plane)
-	box = Box( vec3(-100000, -6, -100000), vec3(100000, -5, 100000), vec3(0), vec3(0.45), DIFF);
+	// box = Box( vec3(-100000, -6, -100000), vec3(100000, -5, 100000), vec3(0), vec3(0.45), DIFF);
 }
 
 
