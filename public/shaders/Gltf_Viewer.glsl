@@ -426,7 +426,7 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			rayDirection = reflect(rayDirection, nl);
 			rayOrigin = x + rayDirection * epsIntersect;
 
-			//bounceIsSpecular = TRUE; // turn on mirror caustics
+			bounceIsSpecular = TRUE; // turn on mirror caustics
 			continue;
 		}
 

@@ -1,51 +1,17 @@
 import * as THREE from 'three';
 import { RGBELoader  } from './RGBELoader.JS'
 import { BVH_Build_Iterative } from './BVH_Acc_Structure_Iterative_SAH_Builder';
-// scene/demo-specific variables go here
 import { init } from "./path";
-// Rendering variables
 
 
-let triangleDataTexture, aabbDataTexture;
+let triangleDataTexture, aabbDataTexture,uniqueMaterialTextures;
 
-// HDR image variables
-let hdrTexture, hdrLoader, hdrExposure = 1.0;
+let hdrTexture
 
 export {initSceneData,updateVariablesAndUniforms}
 
-// Environment variables
-let skyLightIntensity = 2.0, sunLightIntensity = 2.0, sunColor = [1.0, 0.98, 0.92];
-let sunAngle = Math.PI / 2.5;
 
-// Geometry variables
-let meshes = [];
-let triangleMaterialMarkers = [];
 let pathTracingMaterialList = [];
-let uniqueMaterialTextures = [];
-let aabb_array;
-
-// Constants
-const loadingSpinner = document.querySelector("#loadingSpinner");
-
-
-// Model/scene variables
-let modelScale = 10.0;
-let modelRotationY = Math.PI; // in radians
-let modelPositionOffset = new THREE.Vector3();
-let sunDirection = new THREE.Vector3();
-
-
-// GUI menu variables
-let hdr_ExposureController, hdr_ExposureObject;
-let hdrExposureChanged = false;
-let skyLight_IntensityController, skyLight_IntensityObject;
-let skyLightIntensityChanged = false;
-let sun_AngleController, sun_AngleObject;
-let sunAngleChanged = false;
-let sunLight_IntensityController, sunLight_IntensityObject;
-let sunLightIntensityChanged = false;
-let sun_ColorController, sun_ColorObject;
-let sunColorChanged = false;
 
 
 
@@ -77,6 +43,8 @@ function loadModels()
 		
 	prepareGeometryForPT();
 
+
+
 	init();
 
 	// Hide loading spinning and show menu
@@ -98,6 +66,8 @@ async function prepareGeometryForPT()
 
 	var tex =  await new THREE.TextureLoader().load("textures/uvgrid.jpg");
 
+	let modelPositionOffset = new THREE.Vector3();
+
 	//move up
 		
 	// Merge geometry from all models into one new mesh
@@ -113,17 +83,16 @@ async function prepareGeometryForPT()
 
 	var obj = new MaterialObject({}, pathTracingMaterialList);
 	obj.albedoTextureID = 0;
-	console.log(obj);
 
-	console.log(pathTracingMaterialList);
-
-	modelMesh.geometry.rotateY(modelRotationY);
+	modelMesh.geometry.rotateY(Math.PI);
 
 	let totalWork = new Uint32Array(total_number_of_triangles);
 
 	// Initialize triangle and aabb arrays where 2048 = width and height of texture and 4 are the r, g, b and a components
 	let triangle_array = new Float32Array(2048 * 2048 * 4);
-	aabb_array = new Float32Array(2048 * 2048 * 4);
+	const aabb_array = new Float32Array(2048 * 2048 * 4);
+	const modelScale = 10.0;
+
 
 	var triangle_b_box_min = new THREE.Vector3();
 	var triangle_b_box_max = new THREE.Vector3();
@@ -315,6 +284,7 @@ async function prepareGeometryForPT()
 
 // called automatically from within initTHREEjs() function (located in InitCommon.js file)
 function initSceneData(pathTracingUniforms) {
+		let skyLightIntensity = 2.0, sunLightIntensity = 2.0, sunColor = [1.0, 0.98, 0.92];
 
 
 	// scene/demo-specific uniforms go here
@@ -328,8 +298,8 @@ function initSceneData(pathTracingUniforms) {
 	pathTracingUniforms.uSunDirection = { value: new THREE.Vector3() };
 
 	// jumpstart the gui variables so that when the demo starts, all the uniforms are up to date
-	hdrExposureChanged = skyLightIntensityChanged = sunAngleChanged =
-		sunLightIntensityChanged = sunColorChanged = true;
+	// hdrExposureChanged = skyLightIntensityChanged = sunAngleChanged =
+	// 	sunLightIntensityChanged = sunColorChanged = true;
 
 
 } // end function initSceneData()
@@ -340,55 +310,55 @@ function initSceneData(pathTracingUniforms) {
 // called automatically from within the animate() function (located in InitCommon.js file)
 function updateVariablesAndUniforms(renderer,pathTracingUniforms)
 {
-	var cameraIsMoving = false;
-	if (hdrExposureChanged)
-	{
-		renderer.toneMappingExposure =  1.0
-		cameraIsMoving = true;
-		hdrExposureChanged = false;
-	}
+	// var cameraIsMoving = false;
+	// if (hdrExposureChanged)
+	// {
+	// 	renderer.toneMappingExposure =  1.0
+	// 	cameraIsMoving = true;
+	// 	hdrExposureChanged = false;
+	// }
 
-	if (skyLightIntensityChanged)
-	{
-		pathTracingUniforms.uSkyLightIntensity.value = 2.0
-		cameraIsMoving = true;
-		skyLightIntensityChanged = false;
-	}
+	// if (skyLightIntensityChanged)
+	// {
+	// 	pathTracingUniforms.uSkyLightIntensity.value = 2.0
+	// 	cameraIsMoving = true;
+	// 	skyLightIntensityChanged = false;
+	// }
 
-	if (sunAngleChanged)
-	{
-		sunAngle = Math.PI / 2.5
-		sunDirection.set(Math.cos(sunAngle) * 1.2, Math.sin(sunAngle), -Math.cos(sunAngle) * 3.0);
-		sunDirection.normalize();
-		pathTracingUniforms.uSunDirection.value.copy(sunDirection);
-		cameraIsMoving = true;
-		sunAngleChanged = false;
-	}
+	// if (sunAngleChanged)
+	// {
+	// 	sunAngle = Math.PI / 2.5
+	// 	sunDirection.set(Math.cos(sunAngle) * 1.2, Math.sin(sunAngle), -Math.cos(sunAngle) * 3.0);
+	// 	sunDirection.normalize();
+	// 	pathTracingUniforms.uSunDirection.value.copy(sunDirection);
+	// 	cameraIsMoving = true;
+	// 	sunAngleChanged = false;
+	// }
 
-	if (sunLightIntensityChanged)
-	{
-		pathTracingUniforms.uSunLightIntensity.value = 2.0
-		cameraIsMoving = true;
-		sunLightIntensityChanged = false;
-	}
+	// if (sunLightIntensityChanged)
+	// {
+	// 	pathTracingUniforms.uSunLightIntensity.value = 2.0
+	// 	cameraIsMoving = true;
+	// 	sunLightIntensityChanged = false;
+	// }
 
-	if (sunColorChanged)
-	{
-		sunColor = [1.0, 0.98, 0.92]
-		pathTracingUniforms.uSunColor.value.setRGB(sunColor[0], sunColor[1], sunColor[2]);
+	// if (sunColorChanged)
+	// {
+	// 	sunColor = [1.0, 0.98, 0.92]
+	// 	pathTracingUniforms.uSunColor.value.setRGB(sunColor[0], sunColor[1], sunColor[2]);
 
-		cameraIsMoving = true;
-		sunColorChanged = false;
-	}
+	// 	cameraIsMoving = true;
+	// 	sunColorChanged = false;
+	// }
 
 	// INFO
 	// cameraInfoElement.innerHTML = "FOV: " + worldCamera.fov + " / Aperture: " + apertureSize.toFixed(2) + " / FocusDistance: " + focusDistance + "<br>" + "Samples: " + sampleCounter;
-	return cameraIsMoving
+	return false
 
 } // end function updateVariablesAndUniforms()
 
 
-hdrLoader = new RGBELoader();
+const hdrLoader = new RGBELoader();
 hdrLoader.type = THREE.FloatType; // override THREE's default of HalfFloatType
 
 hdrTexture = hdrLoader.load(
