@@ -327,7 +327,7 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 	int sampleLight = FALSE;
 	int willNeedReflectionRay = FALSE;
 
-    	for (int bounces = 0; bounces < 5; bounces++)
+	for (int bounces = 0; bounces < 5; bounces++)
 	{
 		previousIntersecType = hitType;
 
@@ -548,7 +548,7 @@ void SetupScene(void)
 //-----------------------------------------------------------------------
 {
 	// Add thin box for the ground (acts like ground plane)
-	// box = Box( vec3(-100000, -6, -100000), vec3(100000, -5, 100000), vec3(0), vec3(0.45), DIFF);
+	box = Box( vec3(-100000, -6, -100000), vec3(100000, -5, 100000), vec3(0), vec3(0.45), DIFF);
 }
 
 

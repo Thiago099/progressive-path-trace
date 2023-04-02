@@ -8,20 +8,30 @@ export {CreateScene}
 
 
 
-async function CreateScene(geometry, textures)
+async function CreateScene(geometry, textures, skybox=null)
 {
 
-	const hdrTexture =  await new THREE.TextureLoader().load('textures/uvgrid.jpg')
-	hdrTexture.encoding = THREE.LinearEncoding;
-	hdrTexture.minFilter = THREE.NearestFilter;
-	hdrTexture.magFilter = THREE.NearestFilter;
-	hdrTexture.flipY = true;
 
+	if(!skybox)
+	{
+		//single pixel bluish canvas texture
+		const canvas = document.createElement('canvas');
+		canvas.width = 1;
+		canvas.height = 1;
+		const ctx = canvas.getContext('2d');
+		ctx.fillStyle = 'rgb(80, 128, 255)';
+		ctx.fillRect(0, 0, 1, 1);
+		skybox = new THREE.CanvasTexture(canvas);
+	}
+	skybox.encoding = THREE.LinearEncoding;
+	skybox.minFilter = THREE.NearestFilter;
+	skybox.magFilter = THREE.NearestFilter;
+	skybox.flipY = true;
 
 	async function updateScene(pathTracingUniforms)
 	{
 		const scene_data = await buildGeometry(geometry,textures);
-		initSceneData(scene_data,hdrTexture, pathTracingUniforms)
+		initSceneData(scene_data,skybox, pathTracingUniforms)
 	}
 
 

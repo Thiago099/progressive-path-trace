@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import "./PathTracingCommon.js"
-import { OrbitControls } from './OrbitControls';
+
 
 export {CreateRenderer}
 
@@ -46,7 +46,6 @@ async function CreateRenderer(canvas,{updateScene})
 
 	const renderer = new THREE.WebGLRenderer({ canvas: canvas, context: canvas.getContext('webgl2') });
 
-	const regularRenderer = new THREE.WebGLRenderer({ canvas: canvas, context: canvas.getContext('webgl') });
 	//suggestion: set to false for production
 	renderer.debug.checkShaderErrors = true;
 
@@ -80,24 +79,7 @@ async function CreateRenderer(canvas,{updateScene})
 	const worldCamera = new THREE.PerspectiveCamera(60, document.body.clientWidth / document.body.clientHeight, 1, 1000);
 	pathTracingScene.add(worldCamera);
 
-	//rotate camera
-	const controls = new OrbitControls(worldCamera, canvas,()=>cameraIsMoving=true);
-
-
 	
-	//rotate the camera
-	//z move
-	var distance = 40; // desired distance
-    var vector = new THREE.Vector3();
-    vector.subVectors(worldCamera.position, controls.target); // vector from target to camera
-    vector.setLength(distance); // set vector length to desired distance
-    worldCamera.position.copy(controls.target).add(vector); // set camera position
-    controls.zoomSpeed = 2;
-	worldCamera.position.z = 50;
-	
-	
-	console.log("OrbitControls: ", OrbitControls);
-
 
 	// setup render targets...
 	const pathTracingRenderTarget = new THREE.WebGLRenderTarget(context.drawingBufferWidth, context.drawingBufferHeight, {
@@ -397,7 +379,16 @@ async function CreateRenderer(canvas,{updateScene})
 	window.addEventListener('resize', onWindowResize, false);
 	window.addEventListener('orientationchange', onWindowResize, false);
 
-	return {animate,Update}
+	function setMovingCamera()
+	{
+		cameraIsMoving = true;
+	}
+	function addCamera()
+	{
+		pathTracingScene.add(worldCamera);
+		cameraIsMoving = true;
+	}
+	return {animate,Update,renderer,worldCamera,setMovingCamera,addCamera}
 
 } // end function init()
 
