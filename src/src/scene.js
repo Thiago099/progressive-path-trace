@@ -125,7 +125,7 @@ async function buildGeometry(geometry,textures)
 {
 
 
-	let modelPositionOffset = new THREE.Vector3();
+	let modelPositionOffset = new THREE.Vector3(0,0,0);
 
 	//move up
 
@@ -181,7 +181,7 @@ async function buildGeometry(geometry,textures)
 	console.log(pathTracingMaterialList);
 
 
-	modelMesh.geometry.rotateY(Math.PI);
+	// modelMesh.geometry.rotateY(Math.PI*2);
 
 	let totalWork = new Uint32Array(total_number_of_triangles);
 

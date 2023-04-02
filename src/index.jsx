@@ -13,6 +13,8 @@ async function main()
 
     var sphereGeometry = new THREE.BoxGeometry( 10, 10, 10 );
 	var cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
+    //move the cube to the right
+    cubeGeometry.translate( 20, 0, 0 );
 
     var arrow = await new THREE.TextureLoader().load("textures/BlueNoise_RGBA256.png")
     var uvgrid = await new THREE.TextureLoader().load("textures/uvgrid.jpg")
@@ -46,11 +48,11 @@ async function main()
     var R2 = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
     var s2 = new THREE.Scene();
     //mesh1
-    var m1 = new THREE.Mesh(sphereGeometry, new THREE.MeshBasicMaterial({map: arrow}));
+    var m1 = new THREE.Mesh(sphereGeometry, new THREE.MeshBasicMaterial({map: uvgrid}));
     s2.add(m1);
 
     //mesh2
-    var m2 = new THREE.Mesh(cubeGeometry, new THREE.MeshBasicMaterial({map: uvgrid}));
+    var m2 = new THREE.Mesh(cubeGeometry, new THREE.MeshBasicMaterial({map: arrow}));
     s2.add(m2);
 
     //mirror of the renderer.worldCamera
