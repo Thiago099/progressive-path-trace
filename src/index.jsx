@@ -1,8 +1,8 @@
 
 import './style.css'
 import * as THREE from 'three'
-import { CreateRenderer } from './src/path.js';
-import { CreateScene } from './src/scene';
+import { CreateRaytraceRenderer } from './src/RaytraceRenderer.js';
+import { CreateRaytraceScene } from './src/RaytraceScene';
 import { OrbitControls } from './src/OrbitControls';
 const canvas = document.createElement('canvas');
 container = document.getElementById('container');
@@ -22,27 +22,26 @@ async function main()
     const hdrTexture =  await new THREE.TextureLoader().load('textures/uvgrid.jpg')
 
 
-    sphereGeometry.translate( 0, 0, 20 );
-    const scene = await CreateScene(
+    const scene = await CreateRaytraceScene(
         [sphereGeometry,cubeGeometry],
         [
             [uvgrid,arrow_texture], 
             [arrow,arrow_texture]
         ],
         hdrTexture)
-    const renderer = await CreateRenderer(canvas,scene);
+    const renderer = await CreateRaytraceRenderer(canvas,scene);
+	renderer.worldCamera.position.set( 20, 20, 20 );
 
     //rotate camera
-	const controls = new OrbitControls(renderer.worldCamera, canvas,renderer.setMovingCamera);
+	const controls = new OrbitControls(renderer.worldCamera, canvas, renderer.setMovingCamera);
     
-	
 	var distance = 40; // desired distance
     var vector = new THREE.Vector3();
     vector.subVectors(renderer.worldCamera.position, controls.target); // vector from target to camera
     vector.setLength(distance); // set vector length to desired distance
     renderer.worldCamera.position.copy(controls.target).add(vector); // set camera position
     controls.zoomSpeed = 2;
-	renderer.worldCamera.position.z = 50;
+
 
 
     var R2 = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
@@ -89,11 +88,11 @@ async function main()
         }
         else
         {
-            renderer.animate()
+            renderer.render()
         }
     }
 }
 main();
 
 
-import "./src/path.js"
+import "./src/RaytraceRenderer.js"

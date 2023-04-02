@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import "./PathTracingCommon.js"
 
 
-export {CreateRenderer}
+export {CreateRaytraceRenderer}
 
 let fovScale;
 
@@ -21,7 +21,7 @@ let fileLoader = new THREE.FileLoader();
 let textureLoader = new THREE.TextureLoader();
 
 
-async function CreateRenderer(canvas,{updateScene})
+async function CreateRaytraceRenderer(canvas,{updateScene})
 {
 	// load a resource
 	blueNoiseTexture = await textureLoader.load('textures/BlueNoise_RGBA256.png')
@@ -257,22 +257,15 @@ async function CreateRenderer(canvas,{updateScene})
 	// cameraIsMoving = true;
 
 
-	function animate()
+	function render()
 	{
-
-
-		const frameTime = clock.getDelta();
-
 		const elapsedTime = clock.getElapsedTime() % 1000;
-
 
 		if (windowIsBeingResized)
 		{
 			cameraIsMoving = true;
 			windowIsBeingResized = false;
 		}
-
-
 
 		// now update uniforms that are common to all scenes
 		if (!cameraIsMoving)
@@ -338,7 +331,7 @@ async function CreateRenderer(canvas,{updateScene})
 
 
 		cameraIsMoving = false;
-	} // end function animate()
+	} // end function render()
 
 	function onWindowResize()
 	{
@@ -388,7 +381,7 @@ async function CreateRenderer(canvas,{updateScene})
 		pathTracingScene.add(worldCamera);
 		cameraIsMoving = true;
 	}
-	return {animate,Update,renderer,worldCamera,setMovingCamera,addCamera}
+	return {render,Update,renderer,worldCamera,setMovingCamera,addCamera}
 
 } // end function init()
 

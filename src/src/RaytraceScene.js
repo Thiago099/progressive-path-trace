@@ -3,12 +3,12 @@ import { BVH_Build_Iterative } from './BVH_Acc_Structure_Iterative_SAH_Builder';
 
 
 
-export {CreateScene}
+export {CreateRaytraceScene}
 
 
 
 
-async function CreateScene(geometry, textures, skybox=null)
+async function CreateRaytraceScene(geometry, textures, skybox=null)
 {
 
 
