@@ -182,20 +182,20 @@ float SceneIntersect( out int finalIsRayExiting )
 	hitObjectID = -INFINITY;
 	
 
-	// for (int i = 0; i < N_SPHERES; i++)
-	// {
-	// 	d = SphereIntersect( spheres[i].radius, spheres[i].position, rayOrigin, rayDirection );
-	// 	if (d < t)
-	// 	{
-	// 		t = d;
-	// 		hitNormal = (rayOrigin + rayDirection * t) - spheres[i].position;
-	// 		hitEmission = spheres[i].emission;
-	// 		hitColor = spheres[i].color;
-	// 		hitType = spheres[i].type;
-	// 		hitObjectID = float(objectCount);
-	// 	}
-	// 	objectCount++;
-	// }
+	for (int i = 0; i < N_SPHERES; i++)
+	{
+		d = SphereIntersect( spheres[i].radius, spheres[i].position, rayOrigin, rayDirection );
+		if (d < t)
+		{
+			t = d;
+			hitNormal = (rayOrigin + rayDirection * t) - spheres[i].position;
+			hitEmission = spheres[i].emission;
+			hitColor = spheres[i].color;
+			hitType = spheres[i].type;
+			hitObjectID = float(objectCount);
+		}
+		objectCount++;
+	}
 	
 	for (int i = 0; i < N_BOXES; i++)
         {
@@ -850,20 +850,20 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 void SetupScene(void)
 //-----------------------------------------------------------------------
 {
-	// vec3 z  = vec3(0);          
-	// vec3 L1 = vec3(1.0, 1.0, 1.0) * 5.0;// White light
-	// vec3 L2 = vec3(1.0, 0.8, 0.2) * 4.0;// Yellow light
-	// vec3 L3 = vec3(0.1, 0.7, 1.0) * 2.0;// Blue light
+	vec3 z  = vec3(0);          
+	vec3 L1 = vec3(1.0, 1.0, 0.8) * 100.0;// White light
+	vec3 L2 = vec3(1.0, 0.8, 0.2) * 4.0;// Yellow light
+	vec3 L3 = vec3(0.1, 0.7, 1.0) * 2.0;// Blue light
 
-		boxes[0] = Box( vec3(-100000, -6, -100000), vec3(100000, -5, 100000), vec3(0), vec3(0.45), DIFF);
+		boxes[0] = Box( vec3(-100, -6, -100), vec3(100, -5, 100), vec3(0), vec3(0.45), DIFF);
 		
-    //     spheres[0] = Sphere(150.0, vec3(-400, 900, 200), L1, z, LIGHT);//spherical white Light1 
+        spheres[0] = Sphere(1000.0, vec3(-400, 900, 200)*10.0, L1, z, LIGHT);//spherical white Light1 
 	// spheres[1] = Sphere(100.0, vec3( 300, 400,-300), L2, z, LIGHT);//spherical yellow Light2
 	// spheres[2] = Sphere( 50.0, vec3( 500, 250,-100), L3, z, LIGHT);//spherical blue Light3
 	
 	// // spheres[3] = Sphere(1000.0, vec3(  0.0, 990.0,  0.0), z, vec3(1.0, 1.0, 1.0), CHECK);//Checkered Floor
     //     spheres[4] = Sphere(  16.5, vec3(-26.0,   17.2,  5.0), z, vec3(0.95, 0.95, 0.95), DIFF);//Mirror sphere
-    //     spheres[5] = Sphere(  15.0, vec3( 32.0,   16.1, 30.0), z, vec3(1.0, 1.0, 1.0), REFR);//Glass sphere
+        // spheres[5] = Sphere(  15.0, vec3( 32.0,   16.1, 30.0), z, vec3(1.0, 1.0, 1.0), REFR);//Glass sphere
         
 	// ellipsoids[0] = Ellipsoid(  vec3(30,40,16), vec3(90,5,-30), z, vec3(1.0, 0.765557, 0.336057), SPEC);//metallic gold ellipsoid
 	
