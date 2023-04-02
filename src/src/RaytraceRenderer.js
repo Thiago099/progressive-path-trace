@@ -32,6 +32,7 @@ async function CreateRaytraceRenderer(canvas,{updateScene})
 	blueNoiseTexture.magFilter = THREE.NearestFilter;
 	blueNoiseTexture.generateMipmaps = false;
 
+
 	const EPS_intersect= 0.001;
 	const apertureSize = 0.0;
 	const focusDistance =  100.0;

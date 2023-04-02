@@ -19,7 +19,7 @@ async function main()
     var arrow = await new THREE.TextureLoader().load("textures/BlueNoise_RGBA256.png")
     var uvgrid = await new THREE.TextureLoader().load("textures/uvgrid.jpg")
     var arrow_texture = new THREE.TextureLoader().load("textures/arrow.jpg")
-    const hdrTexture =  await new THREE.TextureLoader().load('textures/uvgrid.jpg')
+    const hdrTexture =  await new THREE.TextureLoader().load('textures/background.jpg')
 
 
     const scene = await CreateRaytraceScene(
