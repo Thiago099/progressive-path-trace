@@ -435,7 +435,10 @@ float SceneIntersect( out int finalIsRayExiting )
 		//hitType = SPEC;//int(vd6.x);
 		hitAlbedoTextureID = int(vd7.x);
 		int hitPbrTextureId = int(vd7.z);
+		int hitEmissiveTextureId = int(vd7.w);
 		hitObjectID = float(objectCount);
+
+
 
 
 
@@ -458,6 +461,17 @@ float SceneIntersect( out int finalIsRayExiting )
 		else if (hitPbrTextureId == 5) metalicRoughness = pow((texture(tAlbedoTextures[5], hitUV)).rgb, vec3(2.2));
 		else if (hitPbrTextureId == 6) metalicRoughness = pow((texture(tAlbedoTextures[6], hitUV)).rgb, vec3(2.2));
 		else if (hitPbrTextureId == 7) metalicRoughness = pow((texture(tAlbedoTextures[6], hitUV)).rgb, vec3(2.2));
+
+		vec4 emissiveColor;
+
+			 if(hitEmissiveTextureId == 0) 	emissiveColor = texture(tAlbedoTextures[0], hitUV);
+		else if(hitEmissiveTextureId == 1)  emissiveColor = texture(tAlbedoTextures[1], hitUV);
+		else if(hitEmissiveTextureId == 2)  emissiveColor = texture(tAlbedoTextures[2], hitUV);
+		else if(hitEmissiveTextureId == 3)  emissiveColor = texture(tAlbedoTextures[3], hitUV);
+		else if(hitEmissiveTextureId == 4)  emissiveColor = texture(tAlbedoTextures[4], hitUV);
+		else if(hitEmissiveTextureId == 5)  emissiveColor = texture(tAlbedoTextures[5], hitUV);
+		else if(hitEmissiveTextureId == 6)  emissiveColor = texture(tAlbedoTextures[6], hitUV);
+		else if(hitEmissiveTextureId == 7)  emissiveColor = texture(tAlbedoTextures[7], hitUV);
 		
 		hitType = DIFF;
 		if (metalicRoughness.g > 0.01) // roughness
@@ -471,6 +485,11 @@ float SceneIntersect( out int finalIsRayExiting )
 		if(metalicRoughness.r > 0.01) 
 		{
 			hitType = REFR;
+		}
+		if(emissiveColor.r > 0.01)
+		{
+			hitType = LIGHT;
+			hitEmission = emissiveColor.rgb * 5.0;
 		}
 		// hitType = LIGHT;
 		// hitEmission = vec3(1.0, 1.0, 1.0) * 5.0;
@@ -857,7 +876,7 @@ void SetupScene(void)
 
 		boxes[0] = Box( vec3(-100, -6, -100), vec3(100, -5, 100), vec3(0), vec3(0.45), DIFF);
 		
-        spheres[0] = Sphere(1000.0, vec3(-400, 900, 200)*10.0, L1, z, LIGHT);//spherical white Light1 
+        // spheres[0] = Sphere(1000.0, vec3(-400, 900, 200)*10.0, L1, z, LIGHT);//spherical white Light1 
 	// spheres[1] = Sphere(100.0, vec3( 300, 400,-300), L2, z, LIGHT);//spherical yellow Light2
 	// spheres[2] = Sphere( 50.0, vec3( 500, 250,-100), L3, z, LIGHT);//spherical blue Light3
 	

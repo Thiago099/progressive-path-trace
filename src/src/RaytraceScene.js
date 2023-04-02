@@ -147,6 +147,7 @@ async function buildGeometry(geometry,textures)
 		{
 			for(var texture_part of texture)
 			{
+				if(texture_part != null)
 				result[texture_part.uuid] = texture_part;
 			}
 		}
@@ -160,18 +161,28 @@ async function buildGeometry(geometry,textures)
 	for(var texture of textures)
 	{
 		var material = {};
+		material.emissiveTextureID = -1;
+		material.pbrTextureID = -1;
 		for(var unique_texture in uniqueMaterialTextures)
 		{
 			if (texture[0].uuid == uniqueMaterialTextures[unique_texture].uuid)
 			material.albedoTextureID = Number(unique_texture);
 		}
 		
-		if (texture.length > 1)
+		if (texture.length > 1 && texture[1]!=null)
 		{
 			for(var unique_texture in uniqueMaterialTextures)
 			{
 				if (texture[1].uuid == uniqueMaterialTextures[unique_texture].uuid)
 				material.pbrTextureID =  Number(unique_texture);
+			}
+		}
+		if (texture.length > 2&& texture[2]!=null)
+		{
+			for(var unique_texture in uniqueMaterialTextures)
+			{
+				if (texture[2].uuid == uniqueMaterialTextures[unique_texture].uuid)
+				material.emissiveTextureID =  Number(unique_texture);
 			}
 		}
 		pathTracingMaterialList.push(material);
@@ -305,7 +316,7 @@ async function buildGeometry(geometry,textures)
 		triangle_array[32 * i + 28] = pathTracingMaterialList[materialNumber].albedoTextureID; // r or x
 		triangle_array[32 * i + 29] = 1//pathTracingMaterialList[materialNumber].opacity; // g or y
 		triangle_array[32 * i + 30] = pathTracingMaterialList[materialNumber].pbrTextureID;; // b or z
-		triangle_array[32 * i + 31] = 0; // a or w
+		triangle_array[32 * i + 31] = pathTracingMaterialList[materialNumber].emissiveTextureID;; // a or w
 
 		triangle_b_box_min.copy(triangle_b_box_min.min(vp0));
 		triangle_b_box_max.copy(triangle_b_box_max.max(vp0));

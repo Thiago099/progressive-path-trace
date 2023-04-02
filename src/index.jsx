@@ -26,7 +26,7 @@ async function main()
         [sphereGeometry,cubeGeometry],
         [
             [uvgrid,arrow_texture], 
-            [arrow,arrow_texture]
+            [arrow,null,arrow_texture]
         ],
         hdrTexture)
     const renderer = await CreateRaytraceRenderer(canvas,scene);
