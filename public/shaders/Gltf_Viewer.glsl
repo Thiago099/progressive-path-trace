@@ -182,20 +182,20 @@ float SceneIntersect( out int finalIsRayExiting )
 	hitObjectID = -INFINITY;
 	
 
-	for (int i = 0; i < N_SPHERES; i++)
-	{
-		d = SphereIntersect( spheres[i].radius, spheres[i].position, rayOrigin, rayDirection );
-		if (d < t)
-		{
-			t = d;
-			hitNormal = (rayOrigin + rayDirection * t) - spheres[i].position;
-			hitEmission = spheres[i].emission;
-			hitColor = spheres[i].color;
-			hitType = spheres[i].type;
-			hitObjectID = float(objectCount);
-		}
-		objectCount++;
-	}
+	// for (int i = 0; i < N_SPHERES; i++)
+	// {
+	// 	d = SphereIntersect( spheres[i].radius, spheres[i].position, rayOrigin, rayDirection );
+	// 	if (d < t)
+	// 	{
+	// 		t = d;
+	// 		hitNormal = (rayOrigin + rayDirection * t) - spheres[i].position;
+	// 		hitEmission = spheres[i].emission;
+	// 		hitColor = spheres[i].color;
+	// 		hitType = spheres[i].type;
+	// 		hitObjectID = float(objectCount);
+	// 	}
+	// 	objectCount++;
+	// }
 	
 	for (int i = 0; i < N_BOXES; i++)
         {
@@ -213,103 +213,103 @@ float SceneIntersect( out int finalIsRayExiting )
 		objectCount++;
         }
 	
-	d = EllipsoidIntersect( ellipsoids[0].radii, ellipsoids[0].position, rayOrigin, rayDirection );
-	if (d < t)
-	{
-		t = d;
-		hitNormal = ((rayOrigin + rayDirection * t) - 
-			ellipsoids[0].position) / (ellipsoids[0].radii * ellipsoids[0].radii);
-		hitEmission = ellipsoids[0].emission;
-		hitColor = ellipsoids[0].color;
-		hitType = ellipsoids[0].type;
-		hitObjectID = float(objectCount);
-	}
-	objectCount++;
+	// d = EllipsoidIntersect( ellipsoids[0].radii, ellipsoids[0].position, rayOrigin, rayDirection );
+	// if (d < t)
+	// {
+	// 	t = d;
+	// 	hitNormal = ((rayOrigin + rayDirection * t) - 
+	// 		ellipsoids[0].position) / (ellipsoids[0].radii * ellipsoids[0].radii);
+	// 	hitEmission = ellipsoids[0].emission;
+	// 	hitColor = ellipsoids[0].color;
+	// 	hitType = ellipsoids[0].type;
+	// 	hitObjectID = float(objectCount);
+	// }
+	// objectCount++;
 	
-	d = ParaboloidIntersect( paraboloids[0].rad, paraboloids[0].height, paraboloids[0].pos, rayOrigin, rayDirection, n );
-	if (d < t)
-	{
-		t = d;
-		hitNormal = n;
-		hitEmission = paraboloids[0].emission;
-		hitColor = paraboloids[0].color;
-		hitType = paraboloids[0].type;
-		hitObjectID = float(objectCount);
-	}
-	objectCount++;
+	// d = ParaboloidIntersect( paraboloids[0].rad, paraboloids[0].height, paraboloids[0].pos, rayOrigin, rayDirection, n );
+	// if (d < t)
+	// {
+	// 	t = d;
+	// 	hitNormal = n;
+	// 	hitEmission = paraboloids[0].emission;
+	// 	hitColor = paraboloids[0].color;
+	// 	hitType = paraboloids[0].type;
+	// 	hitObjectID = float(objectCount);
+	// }
+	// objectCount++;
 	
-	d = OpenCylinderIntersect( openCylinders[0].position, openCylinders[0].position + vec3(0,30,30), openCylinders[0].radius, rayOrigin, rayDirection, n );
-	if (d < t)
-	{
-		t = d;
-		hitNormal = n;
-		hitEmission = openCylinders[0].emission;
-		hitColor = openCylinders[0].color;
-		hitType = openCylinders[0].type;
-		hitObjectID = float(objectCount);
-	}
-	objectCount++;
+	// d = OpenCylinderIntersect( openCylinders[0].position, openCylinders[0].position + vec3(0,30,30), openCylinders[0].radius, rayOrigin, rayDirection, n );
+	// if (d < t)
+	// {
+	// 	t = d;
+	// 	hitNormal = n;
+	// 	hitEmission = openCylinders[0].emission;
+	// 	hitColor = openCylinders[0].color;
+	// 	hitType = openCylinders[0].type;
+	// 	hitObjectID = float(objectCount);
+	// }
+	// objectCount++;
         
-	d = CappedCylinderIntersect( cappedCylinders[0].cap1pos, cappedCylinders[0].cap2pos, cappedCylinders[0].radius, rayOrigin, rayDirection, n);
-	if (d < t)
-	{
-		t = d;
-		hitNormal = n;
-		hitEmission = cappedCylinders[0].emission;
-		hitColor = cappedCylinders[0].color;
-		hitType = cappedCylinders[0].type;
-		hitObjectID = float(objectCount);
-	}
-	objectCount++;
+	// d = CappedCylinderIntersect( cappedCylinders[0].cap1pos, cappedCylinders[0].cap2pos, cappedCylinders[0].radius, rayOrigin, rayDirection, n);
+	// if (d < t)
+	// {
+	// 	t = d;
+	// 	hitNormal = n;
+	// 	hitEmission = cappedCylinders[0].emission;
+	// 	hitColor = cappedCylinders[0].color;
+	// 	hitType = cappedCylinders[0].type;
+	// 	hitObjectID = float(objectCount);
+	// }
+	// objectCount++;
         
-	d = ConeIntersect( cones[0].pos0, cones[0].radius0, cones[0].pos1, cones[0].radius1, rayOrigin, rayDirection, n );
-	if (d < t)
-	{
-		t = d;
-		hitNormal = n;
-		hitEmission = cones[0].emission;
-		hitColor = cones[0].color;
-		hitType = cones[0].type;
-		hitObjectID = float(objectCount);
-	}
-	objectCount++;
+	// d = ConeIntersect( cones[0].pos0, cones[0].radius0, cones[0].pos1, cones[0].radius1, rayOrigin, rayDirection, n );
+	// if (d < t)
+	// {
+	// 	t = d;
+	// 	hitNormal = n;
+	// 	hitEmission = cones[0].emission;
+	// 	hitColor = cones[0].color;
+	// 	hitType = cones[0].type;
+	// 	hitObjectID = float(objectCount);
+	// }
+	// objectCount++;
         
-	d = CapsuleIntersect( capsules[0].pos0, capsules[0].radius0, capsules[0].pos1, capsules[0].radius1, rayOrigin, rayDirection, n );
-	if (d < t)
-	{
-		t = d;
-		hitNormal = n;
-		hitEmission = capsules[0].emission;
-		hitColor = capsules[0].color;
-		hitType = capsules[0].type;
-		hitObjectID = float(objectCount);
-	}
-	objectCount++;
+	// d = CapsuleIntersect( capsules[0].pos0, capsules[0].radius0, capsules[0].pos1, capsules[0].radius1, rayOrigin, rayDirection, n );
+	// if (d < t)
+	// {
+	// 	t = d;
+	// 	hitNormal = n;
+	// 	hitEmission = capsules[0].emission;
+	// 	hitColor = capsules[0].color;
+	// 	hitType = capsules[0].type;
+	// 	hitObjectID = float(objectCount);
+	// }
+	// objectCount++;
         
-	// transform ray into Torus's object space
-	rObjOrigin = vec3( uTorusInvMatrix * vec4(rayOrigin, 1.0) );
-	rObjDirection = vec3( uTorusInvMatrix * vec4(rayDirection, 0.0) );
-	// first check that the ray hits the bounding sphere around the torus
-	d = UnitBoundingSphereIntersect( rObjOrigin, rObjDirection, insideSphere );
-	if (d < INFINITY)
-	{	// if outside the sphere, move the ray up close to the Torus, for numerical stability
-		d = insideSphere == TRUE ? 0.0 : d;
-		rObjOrigin += rObjDirection * d;
+	// // transform ray into Torus's object space
+	// rObjOrigin = vec3( uTorusInvMatrix * vec4(rayOrigin, 1.0) );
+	// rObjDirection = vec3( uTorusInvMatrix * vec4(rayDirection, 0.0) );
+	// // first check that the ray hits the bounding sphere around the torus
+	// d = UnitBoundingSphereIntersect( rObjOrigin, rObjDirection, insideSphere );
+	// if (d < INFINITY)
+	// {	// if outside the sphere, move the ray up close to the Torus, for numerical stability
+	// 	d = insideSphere == TRUE ? 0.0 : d;
+	// 	rObjOrigin += rObjDirection * d;
 
-		dt = d + UnitTorusIntersect( rObjOrigin, rObjDirection, torii[0].parameterK, n );
-		if (dt < t)
-		{
-			t = dt;
-			hitNormal = transpose(mat3(uTorusInvMatrix)) * n;
-			hitEmission = torii[0].emission;
-			hitColor = torii[0].color;
-			hitType = torii[0].type;
-			hitObjectID = float(objectCount);
-		}
-	}
+	// 	dt = d + UnitTorusIntersect( rObjOrigin, rObjDirection, torii[0].parameterK, n );
+	// 	if (dt < t)
+	// 	{
+	// 		t = dt;
+	// 		hitNormal = transpose(mat3(uTorusInvMatrix)) * n;
+	// 		hitEmission = torii[0].emission;
+	// 		hitColor = torii[0].color;
+	// 		hitType = torii[0].type;
+	// 		hitObjectID = float(objectCount);
+	// 	}
+	// }
         
 
-		GetBoxNodeData(stackptr, currentBoxNodeData0, currentBoxNodeData1);
+	GetBoxNodeData(stackptr, currentBoxNodeData0, currentBoxNodeData1);
 	currentStackData = vec2(stackptr, BoundingBoxIntersect(currentBoxNodeData0.yzw, currentBoxNodeData1.yzw, rayOrigin, inverseDir));
 	stackLevels[0] = currentStackData;
 	skip = (currentStackData.y < t) ? TRUE : FALSE;
@@ -472,8 +472,8 @@ float SceneIntersect( out int finalIsRayExiting )
 		{
 			hitType = REFR;
 		}
-		hitType = LIGHT;
-		hitEmission = vec3(1.0, 1.0, 1.0) * 5.0;
+		// hitType = LIGHT;
+		// hitEmission = vec3(1.0, 1.0, 1.0) * 5.0;
 
 	}
 	
@@ -850,20 +850,20 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 void SetupScene(void)
 //-----------------------------------------------------------------------
 {
-	vec3 z  = vec3(0);          
-	vec3 L1 = vec3(1.0, 1.0, 1.0) * 5.0;// White light
-	vec3 L2 = vec3(1.0, 0.8, 0.2) * 4.0;// Yellow light
-	vec3 L3 = vec3(0.1, 0.7, 1.0) * 2.0;// Blue light
+	// vec3 z  = vec3(0);          
+	// vec3 L1 = vec3(1.0, 1.0, 1.0) * 5.0;// White light
+	// vec3 L2 = vec3(1.0, 0.8, 0.2) * 4.0;// Yellow light
+	// vec3 L3 = vec3(0.1, 0.7, 1.0) * 2.0;// Blue light
 
 		boxes[0] = Box( vec3(-100000, -6, -100000), vec3(100000, -5, 100000), vec3(0), vec3(0.45), DIFF);
 		
-        spheres[0] = Sphere(150.0, vec3(-400, 900, 200), L1, z, LIGHT);//spherical white Light1 
-	spheres[1] = Sphere(100.0, vec3( 300, 400,-300), L2, z, LIGHT);//spherical yellow Light2
-	spheres[2] = Sphere( 50.0, vec3( 500, 250,-100), L3, z, LIGHT);//spherical blue Light3
+    //     spheres[0] = Sphere(150.0, vec3(-400, 900, 200), L1, z, LIGHT);//spherical white Light1 
+	// spheres[1] = Sphere(100.0, vec3( 300, 400,-300), L2, z, LIGHT);//spherical yellow Light2
+	// spheres[2] = Sphere( 50.0, vec3( 500, 250,-100), L3, z, LIGHT);//spherical blue Light3
 	
-	// spheres[3] = Sphere(1000.0, vec3(  0.0, 990.0,  0.0), z, vec3(1.0, 1.0, 1.0), CHECK);//Checkered Floor
-        spheres[4] = Sphere(  16.5, vec3(-26.0,   17.2,  5.0), z, vec3(0.95, 0.95, 0.95), DIFF);//Mirror sphere
-        spheres[5] = Sphere(  15.0, vec3( 32.0,   16.1, 30.0), z, vec3(1.0, 1.0, 1.0), REFR);//Glass sphere
+	// // spheres[3] = Sphere(1000.0, vec3(  0.0, 990.0,  0.0), z, vec3(1.0, 1.0, 1.0), CHECK);//Checkered Floor
+    //     spheres[4] = Sphere(  16.5, vec3(-26.0,   17.2,  5.0), z, vec3(0.95, 0.95, 0.95), DIFF);//Mirror sphere
+    //     spheres[5] = Sphere(  15.0, vec3( 32.0,   16.1, 30.0), z, vec3(1.0, 1.0, 1.0), REFR);//Glass sphere
         
 	// ellipsoids[0] = Ellipsoid(  vec3(30,40,16), vec3(90,5,-30), z, vec3(1.0, 0.765557, 0.336057), SPEC);//metallic gold ellipsoid
 	
