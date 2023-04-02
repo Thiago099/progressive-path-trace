@@ -870,13 +870,16 @@ void SetupScene(void)
 //-----------------------------------------------------------------------
 {
 	vec3 z  = vec3(0);          
-	vec3 L1 = vec3(1.0, 1.0, 0.8) * 100.0;// White light
+	vec3 L1 = uSunColor  * 100.0;// White light
 	vec3 L2 = vec3(1.0, 0.8, 0.2) * 4.0;// Yellow light
 	vec3 L3 = vec3(0.1, 0.7, 1.0) * 2.0;// Blue light
 
 		boxes[0] = Box( vec3(-100, -6, -100), vec3(100, -5, 100), vec3(0), vec3(0.45), DIFF);
 		
-        // spheres[0] = Sphere(1000.0, vec3(-400, 900, 200)*10.0, L1, z, LIGHT);//spherical white Light1 
+
+
+		
+        // spheres[0] = Sphere(1000.0, uSunDirection*10000.0, L1, z, LIGHT);//spherical white Light1 
 	// spheres[1] = Sphere(100.0, vec3( 300, 400,-300), L2, z, LIGHT);//spherical yellow Light2
 	// spheres[2] = Sphere( 50.0, vec3( 500, 250,-100), L3, z, LIGHT);//spherical blue Light3
 	
