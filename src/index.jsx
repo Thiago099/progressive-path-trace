@@ -44,7 +44,7 @@ async function main()
     scene.Update({
         geometry: sphereGeometry,
         albedo: textureGen("red"),
-        pbr:  textureGen("#003300"),
+        pbr:  textureGen("#ff0000"),
         // emissive: arrow,
     })
 
