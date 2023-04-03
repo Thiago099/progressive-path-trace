@@ -11,6 +11,20 @@ container.appendChild(canvas);
 async function main()
 {
 
+    //generates a single pixel texture with the given color using canvas
+    function textureGen(color)
+    {
+        var canvas = document.createElement('canvas');
+        canvas.width = 1;
+        canvas.height = 1;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, 1, 1);
+        var texture = new THREE.CanvasTexture(canvas);
+        texture.needsUpdate = true;
+        return texture;
+    }
+
     var sphereGeometry = new THREE.BoxGeometry( 10, 10, 10 );
     var sphereGeometry = new THREE.BoxGeometry( 10, 10, 10 );
 	var cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
@@ -29,14 +43,14 @@ async function main()
 
     scene.Update({
         geometry: sphereGeometry,
-        albedo: uvgrid,
-        emissive: arrow,
+        albedo: textureGen("red"),
+        pbr:  textureGen("#003300"),
+        // emissive: arrow,
     })
 
-
-	renderer.worldCamera.position.set( 20, 20, 20 );
-	const controls = new OrbitControls(renderer.worldCamera, canvas, renderer.setMovingCamera);
-	var distance = 40; // desired distance
+    renderer.worldCamera.position.set( 20, 20, 20 );
+    const controls = new OrbitControls(renderer.worldCamera, canvas, renderer.setMovingCamera);
+    var distance = 40; // desired distance
     var vector = new THREE.Vector3();
     vector.subVectors(renderer.worldCamera.position, controls.target); // vector from target to camera
     vector.setLength(distance); // set vector length to desired distance
@@ -44,16 +58,26 @@ async function main()
     controls.zoomSpeed = 2;
 
 
-
-    var regular_renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
-    var regular_scene = new THREE.Scene();
-    //mesh1
+    var regular_renderer = null
+    var regular_scene = null
     var sphereMesh = new THREE.Mesh(sphereGeometry, new THREE.MeshBasicMaterial({map: uvgrid}));
-    regular_scene.add(sphereMesh);
+	function initRegularRender()
+    {
+        regular_renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
+        regular_scene = new THREE.Scene();
+        //mesh1
+        regular_scene.add(sphereMesh);
+        // regular_scene.add(renderer.worldCamera);
+    }
 
     //mesh2
     // var cubeMesh = new THREE.Mesh(cubeGeometry, new THREE.MeshBasicMaterial({map: arrow}));
     // regular_scene.add(cubeMesh);
+
+    //camera
+    // var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+    // camera.position.set( 20, 20, 20 );
+    // regular_scene.add(camera);
 
     var target = "raytrace"
     //mouse middle
@@ -62,13 +86,11 @@ async function main()
             var ct = target == "regular" ? "raytrace" : "regular"
             if(ct == "regular")
             {
-
+                initRegularRender()
                 regular_scene.add(renderer.worldCamera);
             }
             else
             {
-                //clear all camera related from regular_scene
-                regular_scene.remove(renderer.worldCamera);
                 renderer.addCamera()
             }
             target = ct
