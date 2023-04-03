@@ -48,7 +48,7 @@ async function main()
     scene.Update({
         geometry: sphereGeometry,
         albedo: textureGen("rgb(255,0,0)"),
-        pbr:  textureGen("rgb(0,0,0)"),
+        pbr:  textureGen("rgb(1,0,0)"),
         // emissive: textureGen("rgb(255,0,0)"),
     })
 

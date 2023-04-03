@@ -474,23 +474,26 @@ float SceneIntersect( out int finalIsRayExiting )
 		else if(hitEmissiveTextureId == 7)  emissiveColor = texture(tAlbedoTextures[7], hitUV);
 		
 		hitType = DIFF;
-		if (metalicRoughness.g > 0.0) // roughness
-		{
-			hitType = COAT;
-		}
-		if (metalicRoughness.b > 0.0) // metalness
-		{
-			hitType = SPEC;
-		}
-		if(metalicRoughness.r > 0.0) 
-		{
-			hitType = REFR;
-		}
 		if(emissiveColor.r > 0.0)
 		{
 			hitType = LIGHT;
 			hitEmission = texColor.rgb * emissiveColor.r * 100.0;
 		}
+		else if(metalicRoughness.r > 0.0) 
+		{
+			hitType = REFR;
+		}
+		else if (metalicRoughness.b > 0.0) // metalness
+		{
+			hitType = SPEC;
+		}
+		else if (metalicRoughness.g > 0.0) // roughness
+		{
+			hitType = COAT;
+		}
+
+
+
 		// hitType = LIGHT;
 		// hitEmission = vec3(1.0, 1.0, 1.0) * 5.0;
 
