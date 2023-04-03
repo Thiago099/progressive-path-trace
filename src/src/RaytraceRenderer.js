@@ -17,11 +17,11 @@ let cameraRecentlyMoving = false;
 let blueNoiseTexture;
 
 
-let fileLoader = new THREE.FileLoader();
-let textureLoader = new THREE.TextureLoader();
+const fileLoader = new THREE.FileLoader();
+const textureLoader = new THREE.TextureLoader();
 
 
-async function CreateRaytraceRenderer(canvas,{updateScene})
+async function CreateRaytraceRenderer(canvas,scene)
 {
 	// load a resource
 	blueNoiseTexture = await textureLoader.load('textures/BlueNoise_RGBA256.png')
@@ -104,9 +104,12 @@ async function CreateRaytraceRenderer(canvas,{updateScene})
 	screenCopyRenderTarget.texture.generateMipmaps = false;
 
 	const pathTracingUniforms = {}
+
+	scene.pathTracingUniforms = pathTracingUniforms;
 	
 
-	await updateScene(pathTracingUniforms)
+	await scene.Build(pathTracingUniforms)
+	
 
 	async function Update()
 	{

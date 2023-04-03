@@ -8,13 +8,12 @@ export {CreateRaytraceScene}
 
 
 
-async function CreateRaytraceScene(geometry, textures, skybox=null)
+async function CreateRaytraceScene(skybox=null)
 {
 
-
+	var result = {Update,Build}
 	if(!skybox)
 	{
-		//single pixel bluish canvas texture
 		const canvas = document.createElement('canvas');
 		canvas.width = 1;
 		canvas.height = 1;
@@ -28,14 +27,23 @@ async function CreateRaytraceScene(geometry, textures, skybox=null)
 	skybox.magFilter = THREE.NearestFilter;
 	skybox.flipY = true;
 
-	async function updateScene(pathTracingUniforms)
+	var _geometry = null;
+	var _textures = null;
+	async function Build()
 	{
-		const scene_data = await buildGeometry(geometry,textures);
-		initSceneData(scene_data,skybox, pathTracingUniforms)
+		const scene_data = await buildGeometry(_geometry??[],_textures??[]);
+		initSceneData(scene_data, skybox, result.pathTracingUniforms)
+	}
+
+	function Update(...data)
+	{
+		_geometry = data.map(x=>x.geometry);
+		_textures = data.map(x=>[x.albedo,x.pbr,x.emissive]);
+		Build();
 	}
 
 
-	return {updateScene}
+	return result
 }
 
 // called automatically from within initTHREEjs() function (located in InitCommon.js file)
@@ -53,21 +61,6 @@ function initSceneData({ triangleDataTexture, aabbDataTexture,uniqueMaterialText
 
 } // end function initSceneData()
 
-
-
-function MaterialObject(material, pathTracingMaterialList)
-{
-	// a list of material types and their corresponding numbers are found in the 'pathTracingCommon.js' file
-	this.type = material.opacity < 1 ? 2 : 1; // default is 1 = diffuse opaque, 2 = glossy transparent, 4 = glossy opaque;
-	this.albedoTextureID = 0; // which diffuse map to use for model's color, '-1' = no textures are used
-	this.color = material.color ? material.color.copy(material.color) : new THREE.Color(1.0, 1.0, 1.0); // takes on different meanings, depending on 'type' above
-	this.roughness = material.roughness || 1.0; // 0.0 to 1.0 range, perfectly smooth to extremely rough
-	this.metalness = material.metalness || 0.0; // 0.0 to 1.0 range, usually either 0 or 1, either non-metal or metal
-	this.opacity = material.opacity || 1.0; // 0.0 to 1.0 range, fully transparent to fully opaque
-	// this seems to be unused
-	// this.refractiveIndex = this.type === 4 ? 1.0 : 1.5; // 1.0=air, 1.33=water, 1.4=clearCoat, 1.5=glass, etc.
-	pathTracingMaterialList.push(this);
-}
 
 function mergeGeometry(geometries)
 {
@@ -153,7 +146,6 @@ async function buildGeometry(geometry,textures)
 		}
 		return Object.values(result);
 	})();
-	console.log(uniqueMaterialTextures);
 
 
 	const pathTracingMaterialList = [];
@@ -187,9 +179,6 @@ async function buildGeometry(geometry,textures)
 		}
 		pathTracingMaterialList.push(material);
 	}
-	console.log(pathTracingMaterialList);
-
-	console.log(pathTracingMaterialList);
 
 
 	// modelMesh.geometry.rotateY(Math.PI*2);
