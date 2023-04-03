@@ -595,10 +595,7 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 					pixelSharpness = 1.01;
 					mask *= Get_HDR_Color(rayDirection);
 				}	
-				else if (sampleLight == TRUE) // sun rays going through glass, hitting another surface
-					mask *= uSunColor * uSunLightIntensity;
-				else  // sky rays going through glass, hitting another surface
-					mask *= Get_HDR_Color(rayDirection) * uSkyLightIntensity;
+				mask *= Get_HDR_Color(rayDirection) * uSkyLightIntensity;
 
 				if (bounceIsSpecular == TRUE) // prevents sun 'fireflies' on diffuse surfaces
 					accumCol += mask;
