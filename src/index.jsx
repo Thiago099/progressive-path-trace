@@ -31,9 +31,13 @@ async function main()
     //move the cube to the right
     cubeGeometry.translate( 20, 0, 0 );
 
-    var uvgrid = await new THREE.TextureLoader().load("textures/uvgrid.jpg")
+    var uvgrid = await new THREE.TextureLoader().load("textures/checker.png")
+    //nearest
+    uvgrid.magFilter = THREE.NearestFilter;
+    uvgrid.minFilter = THREE.NearestFilter;
+
     var arrow = await new THREE.TextureLoader().load("textures/arrow.jpg")
-    const hdrTexture =  await new THREE.TextureLoader().load('textures/background.jpg')
+    const hdrTexture =  await new THREE.TextureLoader().load('textures/background.png')
 
 
     const scene = await CreateRaytraceScene(hdrTexture)
@@ -43,9 +47,9 @@ async function main()
 
     scene.Update({
         geometry: sphereGeometry,
-        albedo: textureGen("red"),
-        pbr:  textureGen("#ff8800"),
-        // emissive: arrow,
+        albedo: textureGen("rgb(255,0,0)"),
+        pbr:  textureGen("rgb(0,0,0)"),
+        // emissive: textureGen("rgb(255,0,0)"),
     })
 
     renderer.worldCamera.position.set( 20, 20, 20 );
@@ -65,19 +69,10 @@ async function main()
     {
         regular_renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true});
         regular_scene = new THREE.Scene();
-        //mesh1
         regular_scene.add(sphereMesh);
-        // regular_scene.add(renderer.worldCamera);
+        regular_scene.add(renderer.worldCamera);
     }
 
-    //mesh2
-    // var cubeMesh = new THREE.Mesh(cubeGeometry, new THREE.MeshBasicMaterial({map: arrow}));
-    // regular_scene.add(cubeMesh);
-
-    //camera
-    // var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    // camera.position.set( 20, 20, 20 );
-    // regular_scene.add(camera);
 
     var target = "raytrace"
     //mouse middle
@@ -87,7 +82,6 @@ async function main()
             if(ct == "regular")
             {
                 initRegularRender()
-                regular_scene.add(renderer.worldCamera);
             }
             else
             {

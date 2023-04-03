@@ -246,7 +246,6 @@ async function CreateRaytraceRenderer(canvas,scene)
 
 	renderer.toneMappingExposure =  1.0
 
-	pathTracingUniforms.uSkyLightIntensity.value = 2.0
 
 	var sunAngle = Math.PI / 2.5
 	var sunDirection = new THREE.Vector3();
