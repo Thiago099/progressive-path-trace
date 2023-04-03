@@ -50,6 +50,11 @@ async function main()
         albedo: textureGen("rgb(255,0,0)"),
         pbr:  textureGen("rgb(1,0,0)"),
         // emissive: textureGen("rgb(255,0,0)"),
+    },
+    {
+        geometry: cubeGeometry,
+        albedo: textureGen("rgb(0,255,0)"),
+        pbr:  textureGen("rgb(0,0,1)"),
     })
 
     renderer.worldCamera.position.set( 20, 20, 20 );

@@ -565,25 +565,16 @@ vec3 CalculateRadiance( out vec3 objectNormal, out vec3 objectColor, out float o
 			if (previousIntersecType == DIFF)
 			{
 
-				if (sampleLight == TRUE)
-					accumCol += mask * uSunColor * uSunLightIntensity * 0.5;
-				else
 					accumCol += mask * Get_HDR_Color(rayDirection) * uSkyLightIntensity * 0.5;
 			}
 
 			if (previousIntersecType == SPEC)
 			{
-				if (sampleLight == TRUE)
-					accumCol += mask * uSunColor * uSunLightIntensity * 0.5;
-				else
 					accumCol += mask * Get_HDR_Color(rayDirection) * uSkyLightIntensity * 0.5;
 			}
 
 			if (previousIntersecType == COAT)
 			{
-				if (sampleLight == TRUE)
-					accumCol += mask * uSunColor * uSunLightIntensity * 0.5;
-				else
 					accumCol += mask * Get_HDR_Color(rayDirection) * uSkyLightIntensity * 0.5;
 			}
 
